@@ -30,7 +30,7 @@ export default function About() {
             aos detalhes e foco em resultados.
           </p>
           <p>
-            Sou o Gabriel, desenvolvedor web em Avaré/SP. Trabalho com tecnologias modernas como
+            Sou o Gabriel, desenvolvedor web. Trabalho com tecnologias modernas como
             React, Vite e Tailwind para criar sites rápidos, bonitos e que funcionam de verdade —
             tanto no celular quanto no computador.
           </p>
@@ -40,7 +40,7 @@ export default function About() {
           </p>
           <div className="pt-4 border-t border-stone-800">
             <p className="text-stone-500 text-sm">
-              📍 Avaré/SP &nbsp;·&nbsp; Atendimento online para todo o Brasil
+              Atendimento online para todo o Brasil
             </p>
           </div>
         </div>

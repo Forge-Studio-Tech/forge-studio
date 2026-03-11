@@ -9,7 +9,7 @@ export default function Hero() {
       {/* Conteúdo */}
       <div className="max-w-4xl">
         <p className="text-amber-600 text-sm font-semibold tracking-[0.2em] uppercase mb-6">
-          Avaré/SP · Agência Digital
+          Agência Digital
         </p>
 
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tight text-stone-100 mb-8">
@@ -20,8 +20,8 @@ export default function Hero() {
         </h1>
 
         <p className="text-lg md:text-xl text-stone-400 max-w-xl leading-relaxed mb-10">
-          Criamos Landing Pages e Sites Institucionais para negócios em Avaré/SP
-          e região. Do briefing ao ar em tempo recorde.
+          Criamos Landing Pages e Sites Institucionais para negócios de qualquer
+          segmento. Do briefing ao ar em tempo recorde.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">
