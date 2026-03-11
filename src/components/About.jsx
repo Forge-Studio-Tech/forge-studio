@@ -1,13 +1,13 @@
 const highlights = [
-  { num: '2+', label: 'anos de experiência' },
-  { num: '5+', label: 'projetos entregues' },
+  { num: '15+', label: 'anos de experiência' },
+  { num: '20+', label: 'projetos entregues' },
   { num: '100%', label: 'clientes ativos' },
 ]
 
 export default function About() {
   return (
     <section id="sobre" className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800">
-      <div className="max-w-5xl grid md:grid-cols-2 gap-16 items-start">
+      <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-start">
         <div>
           <p className="text-copper text-sm font-semibold tracking-[0.2em] uppercase mb-3">Sobre</p>
           <h2 className="text-3xl md:text-5xl font-black text-stone-100 mb-8 leading-tight">
@@ -30,8 +30,8 @@ export default function About() {
             aos detalhes e foco em resultados.
           </p>
           <p>
-            Sou o Gabriel, desenvolvedor web. Trabalho com tecnologias modernas como
-            React, Vite e Tailwind para criar sites rápidos, bonitos e que funcionam de verdade —
+            Sou o Gabriel, desenvolvedor de software. Trabalho com tecnologias modernas como
+            React, Vite, Tailwind e Flutter para criar sites rápidos, bonitos e que funcionam de verdade —
             tanto no celular quanto no computador.
           </p>
           <p>

@@ -6,7 +6,7 @@ export default function Hero() {
       {/* Linha vertical de detalhe */}
       <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-copper to-transparent opacity-60" />
 
-      <div className="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
+      <div className="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
 
         {/* Coluna esquerda — texto */}
         <div>

@@ -54,7 +54,7 @@ function FAQItem({ q, a }) {
 export default function FAQ() {
   return (
     <section id="faq" className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800">
-      <div className="max-w-3xl">
+      <div className="max-w-3xl mx-auto">
         <p className="text-copper text-sm font-semibold tracking-[0.2em] uppercase mb-3">FAQ</p>
         <h2 className="text-3xl md:text-5xl font-black text-stone-100 mb-16 leading-tight">
           Dúvidas frequentes

@@ -2,7 +2,7 @@ export default function Footer() {
   const year = new Date().getFullYear()
   return (
     <footer className="px-6 md:px-12 lg:px-20 py-10 border-t border-stone-800">
-      <div className="max-w-5xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <img src="/ForgeLogo.png" alt="Forge Studio" className="h-12 w-auto" />
         </div>
