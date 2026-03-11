@@ -10,9 +10,12 @@ export default function Hero() {
 
         {/* Coluna esquerda — texto */}
         <div>
-          <p className="text-cyan-500 text-sm font-semibold tracking-[0.2em] uppercase mb-6">
-            Agência Digital
-          </p>
+          <div className="inline-flex items-center gap-2.5 border border-copper/50 bg-copper/5 px-4 py-2 mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-copper animate-pulse" />
+            <span className="text-copper text-xs font-black tracking-[0.3em] uppercase">
+              Agência Digital
+            </span>
+          </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-stone-100 mb-8">
             Cada projeto<br />
