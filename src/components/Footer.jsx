@@ -5,9 +5,9 @@ export default function Footer() {
       <div className="max-w-5xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <p className="text-stone-100 font-black text-lg tracking-tight">
-            FORGE <span className="text-amber-500">STUDIO</span>
+            FORGE <span className="text-copper">STUDIO</span>
           </p>
-          <p className="text-stone-600 text-xs mt-1">Avaré/SP · Agência Digital</p>
+          <p className="text-stone-600 text-xs mt-1">Agência Digital</p>
         </div>
         <div className="flex flex-col md:items-end gap-1">
           <p className="text-stone-500 text-sm">
@@ -17,7 +17,7 @@ export default function Footer() {
             href="https://wa.me/5514996936966"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-stone-500 hover:text-amber-500 text-sm transition-colors"
+            className="text-stone-500 hover:text-copper text-sm transition-colors"
           >
             (14) 99693-6966
           </a>

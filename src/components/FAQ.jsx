@@ -35,10 +35,10 @@ function FAQItem({ q, a }) {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-5 text-left gap-4 group"
       >
-        <span className="text-stone-200 font-medium text-sm md:text-base group-hover:text-amber-500 transition-colors">
+        <span className="text-stone-200 font-medium text-sm md:text-base group-hover:text-copper transition-colors">
           {q}
         </span>
-        <span className={`shrink-0 text-amber-600 transition-transform duration-200 ${open ? 'rotate-45' : ''}`}>
+        <span className={`shrink-0 text-copper transition-transform duration-200 ${open ? 'rotate-45' : ''}`}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
@@ -55,7 +55,7 @@ export default function FAQ() {
   return (
     <section id="faq" className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800">
       <div className="max-w-3xl">
-        <p className="text-amber-600 text-sm font-semibold tracking-[0.2em] uppercase mb-3">FAQ</p>
+        <p className="text-copper text-sm font-semibold tracking-[0.2em] uppercase mb-3">FAQ</p>
         <h2 className="text-3xl md:text-5xl font-black text-stone-100 mb-16 leading-tight">
           Dúvidas frequentes
         </h2>
