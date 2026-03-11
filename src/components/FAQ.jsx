@@ -3,11 +3,11 @@ import { useState } from 'react'
 const faqs = [
   {
     q: 'Quanto tempo leva para o meu site ficar pronto?',
-    a: 'Landing Pages ficam prontas em 5 a 10 dias úteis após a aprovação do briefing. Sites Institucionais levam de 15 a 30 dias úteis, dependendo da complexidade.',
+    a: 'Landing Pages ficam prontas em até 5 dias úteis após a aprovação do briefing. Sites Institucionais levam até 10 dias úteis, dependendo da complexidade.',
   },
   {
     q: 'Preciso ter domínio e hospedagem antes de contratar?',
-    a: 'Não. A gente cuida de tudo. O primeiro ano de domínio .com.br está incluso na criação. A hospedagem pode ser incluída no plano mensal ou você pode optar por uma solução gratuita como o Cloudflare Pages.',
+    a: 'Não. A gente cuida de tudo. O primeiro ano de domínio .com.br está incluso na criação. A hospedagem pode ser incluída no plano mensal ou gerenciada separadamente.',
   },
   {
     q: 'Posso pedir alterações depois que o site ficar pronto?',
