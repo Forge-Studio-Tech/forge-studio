@@ -2,7 +2,6 @@ import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Portfolio from './components/Portfolio'
 import About from './components/About'
-import Testimonials from './components/Testimonials'
 import FAQ from './components/FAQ'
 import CTA from './components/CTA'
 import Footer from './components/Footer'
@@ -15,7 +14,6 @@ export default function App() {
       <Hero />
       <Portfolio />
       <About />
-      <Testimonials />
       <FAQ />
       <CTA />
       <Footer />

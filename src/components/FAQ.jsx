@@ -35,7 +35,7 @@ function FAQItem({ q, a }) {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-5 text-left gap-4 group"
       >
-        <span className="text-stone-200 font-medium text-sm md:text-base group-hover:text-amber-400 transition-colors">
+        <span className="text-stone-200 font-medium text-sm md:text-base group-hover:text-amber-500 transition-colors">
           {q}
         </span>
         <span className={`shrink-0 text-amber-600 transition-transform duration-200 ${open ? 'rotate-45' : ''}`}>

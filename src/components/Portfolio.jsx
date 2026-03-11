@@ -12,10 +12,10 @@ const projects = [
     name: 'Versa Studio',
     tag: 'Landing Page',
     desc: 'Landing page para estúdio fitness especializado em treino EMS e equipamentos Nexa. Design focado em conversão e agendamento.',
-    url: null,
-    label: 'Em breve',
+    url: 'https://versaems.com',
+    label: 'versaems.com',
     stack: ['React', 'Vite', 'Tailwind', 'TypeScript'],
-    live: false,
+    live: true,
   },
 ]
 
@@ -66,7 +66,7 @@ export default function Portfolio() {
                   href={p.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-amber-500 hover:text-amber-400 font-medium transition-colors"
+                  className="inline-flex items-center gap-2 text-sm text-amber-600 hover:text-amber-500 font-medium transition-colors"
                 >
                   {p.label}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

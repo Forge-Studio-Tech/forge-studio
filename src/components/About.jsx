@@ -16,7 +16,7 @@ export default function About() {
           <div className="flex gap-8 mb-10">
             {highlights.map((h) => (
               <div key={h.label}>
-                <p className="text-3xl font-black text-amber-500">{h.num}</p>
+                <p className="text-3xl font-black text-amber-600">{h.num}</p>
                 <p className="text-xs text-stone-500 mt-1">{h.label}</p>
               </div>
             ))}
