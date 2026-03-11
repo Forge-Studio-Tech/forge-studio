@@ -1,8 +1,8 @@
 export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 lg:px-20 py-5 flex items-center justify-between border-b border-stone-800/60 bg-stone-950/80 backdrop-blur-sm">
-      <a href="#" className="text-stone-100 font-black text-base tracking-tight">
-        FORGE <span className="text-copper">STUDIO</span>
+      <a href="#">
+        <img src="/ForgeLogo.png" alt="Forge Studio" className="h-10 w-auto" />
       </a>
       <div className="hidden md:flex items-center gap-8 text-sm text-stone-400">
         <a href="#portfolio" className="hover:text-cyan-400 transition-colors">Portfólio</a>
