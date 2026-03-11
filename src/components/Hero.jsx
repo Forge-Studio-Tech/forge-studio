@@ -21,7 +21,7 @@ export default function Hero() {
 
         <p className="text-lg md:text-xl text-stone-400 max-w-xl leading-relaxed mb-10">
           Criamos Landing Pages e Sites Institucionais para negócios de qualquer
-          segmento. Do briefing ao ar em tempo recorde.
+          segmento. Da ideia ao ar em tempo recorde.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">

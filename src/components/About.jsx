@@ -11,7 +11,7 @@ export default function About() {
         <div>
           <p className="text-amber-600 text-sm font-semibold tracking-[0.2em] uppercase mb-3">Sobre</p>
           <h2 className="text-3xl md:text-5xl font-black text-stone-100 mb-8 leading-tight">
-            Feito com cuidado,<br />do início ao fim.
+            Feito com cuidado,<br />da ideia ao ar.
           </h2>
           <div className="flex gap-8 mb-10">
             {highlights.map((h) => (
@@ -35,7 +35,7 @@ export default function About() {
             tanto no celular quanto no computador.
           </p>
           <p>
-            Do briefing até o deploy, acompanho cada etapa pessoalmente. Sem terceirização,
+            Do primeiro contato até a publicação, acompanho cada etapa pessoalmente. Sem terceirização,
             sem surpresas.
           </p>
           <div className="pt-4 border-t border-stone-800">
