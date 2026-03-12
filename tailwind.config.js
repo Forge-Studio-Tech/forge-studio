@@ -15,6 +15,16 @@ export default {
           text: '#f5f0eb',
           muted: '#78716c',
         },
+        portal: {
+          bg: 'var(--portal-bg)',
+          surface: 'var(--portal-surface)',
+          border: 'var(--portal-border)',
+          text: 'var(--portal-text)',
+          muted: 'var(--portal-muted)',
+        },
+        success: '#22c55e',
+        warning: '#eab308',
+        danger: '#ef4444',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

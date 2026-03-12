@@ -4,6 +4,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Portal Theme Variables (Dark = default) ── */
+:root {
+  --portal-bg: #0c0a09;
+  --portal-surface: #161412;
+  --portal-border: #2a2420;
+  --portal-text: #f5f0eb;
+  --portal-muted: #78716c;
+}
+
+[data-theme="light"] {
+  --portal-bg: #F8F7F5;
+  --portal-surface: #FFFFFF;
+  --portal-border: #E8E4DF;
+  --portal-text: #1C1917;
+  --portal-muted: #78716C;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
