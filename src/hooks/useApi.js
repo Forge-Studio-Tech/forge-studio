@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_URL = import.meta.env.VITE_API_URL || (IS_LOCAL ? 'http://localhost:3000' : 'https://api.forgestudio.tech')
 
 export async function apiFetch(path, options = {}) {
   const headers = {

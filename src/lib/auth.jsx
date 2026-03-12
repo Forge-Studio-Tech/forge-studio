@@ -2,8 +2,9 @@ import { createContext, useContext, useState, useEffect } from 'react'
 
 const AuthContext = createContext(null)
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-const DEV_MODE = !import.meta.env.VITE_API_URL
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_URL = import.meta.env.VITE_API_URL || (IS_LOCAL ? 'http://localhost:3000' : 'https://api.forgestudio.tech')
+const DEV_MODE = IS_LOCAL && !import.meta.env.VITE_API_URL
 
 // Usuarios de desenvolvimento — removido quando o backend estiver pronto
 const DEV_USERS = [
