@@ -383,7 +383,7 @@ function SelectField({ label, value, onChange, options, allowEmpty }) {
   return (
     <div>
       <label className="block text-sm font-medium text-portal-text mb-1">{label}</label>
-      <select value={value || ''} onChange={(e) => onChange(e.target.value)} className={inputClass}>
+      <select value={value || ''} onChange={(e) => onChange(e.target.value)} className={`${inputClass} h-[38px]`}>
         {allowEmpty && <option value="">—</option>}
         {options.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>

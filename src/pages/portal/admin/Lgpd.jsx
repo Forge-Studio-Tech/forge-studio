@@ -8,13 +8,22 @@ const ACTION_LABELS = {
   data_deleted: 'Dados excluidos',
 }
 
+const ROLE_LABELS = { admin: 'Admin', client: 'Cliente' }
+const ROLE_FILTERS = [
+  { value: 'all', label: 'Todos' },
+  { value: 'client', label: 'Clientes' },
+  { value: 'admin', label: 'Admins' },
+]
+
 export default function AdminLgpd() {
   const [tab, setTab] = useState('consents')
+  const [roleFilter, setRoleFilter] = useState('all')
   const { data: consentsData, loading: loadingConsents } = useApi('/api/lgpd')
   const { data: auditData, loading: loadingAudit } = useApi('/api/lgpd/audit')
   const [exporting, setExporting] = useState(false)
 
-  const records = consentsData?.records || []
+  const allRecords = consentsData?.records || []
+  const records = roleFilter === 'all' ? allRecords : allRecords.filter((r) => r.role === roleFilter)
   const audit = auditData?.audit || []
 
   async function handleExport() {
@@ -35,9 +44,9 @@ export default function AdminLgpd() {
     }
   }
 
-  const totalClients = records.length
+  const totalUsers = records.length
   const consented = records.filter((r) => r.lgpd_consent_at).length
-  const pending = totalClients - consented
+  const pending = totalUsers - consented
   const withMarketing = records.filter((r) => r.consent_details?.marketing).length
 
   return (
@@ -56,9 +65,27 @@ export default function AdminLgpd() {
         </button>
       </div>
 
+      {/* Filtro por tipo */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-portal-muted text-sm">Filtrar:</span>
+        {ROLE_FILTERS.map((f) => (
+          <button
+            key={f.value}
+            onClick={() => setRoleFilter(f.value)}
+            className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+              roleFilter === f.value
+                ? 'bg-copper/15 text-copper'
+                : 'text-portal-muted hover:text-portal-text hover:bg-portal-border/20'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       {/* Cards resumo */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <SummaryCard label="Total Clientes" value={totalClients} />
+        <SummaryCard label="Total Usuarios" value={totalUsers} />
         <SummaryCard label="Consentimento OK" value={consented} color="text-success" />
         <SummaryCard label="Pendente" value={pending} color={pending > 0 ? 'text-warning' : 'text-portal-muted'} />
         <SummaryCard label="Marketing Aceito" value={withMarketing} color="text-copper" />
@@ -119,7 +146,8 @@ function ConsentsTable({ records, loading }) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-portal-border">
-            <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Cliente</th>
+            <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Usuario</th>
+            <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden sm:table-cell">Tipo</th>
             <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">Email</th>
             <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Status</th>
             <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">Versao</th>
@@ -133,8 +161,8 @@ function ConsentsTable({ records, loading }) {
         <tbody className="divide-y divide-portal-border">
           {records.length === 0 ? (
             <tr>
-              <td colSpan={9} className="px-6 py-8 text-center text-portal-muted text-sm">
-                Nenhum cliente cadastrado.
+              <td colSpan={10} className="px-6 py-8 text-center text-portal-muted text-sm">
+                Nenhum usuario cadastrado.
               </td>
             </tr>
           ) : (
@@ -145,6 +173,15 @@ function ConsentsTable({ records, loading }) {
                   <td className="px-6 py-4">
                     <p className="text-portal-text text-sm font-medium">{r.company_name || r.name}</p>
                     {r.company_name && <p className="text-portal-muted text-xs">{r.name}</p>}
+                  </td>
+                  <td className="px-6 py-4 hidden sm:table-cell">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      r.role === 'admin'
+                        ? 'bg-copper/15 text-copper'
+                        : 'bg-portal-border/30 text-portal-muted'
+                    }`}>
+                      {ROLE_LABELS[r.role] || r.role}
+                    </span>
                   </td>
                   <td className="px-6 py-4 text-portal-muted text-sm hidden md:table-cell">{r.email}</td>
                   <td className="px-6 py-4">
