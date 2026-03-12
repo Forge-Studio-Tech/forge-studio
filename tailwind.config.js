@@ -5,8 +5,8 @@ export default {
     extend: {
       colors: {
         copper: {
-          DEFAULT: '#c8793b',
-          dark: '#a8612d',
+          DEFAULT: '#D5851E',
+          dark: '#B36A17',
         },
         forge: {
           bg: '#0c0a09',

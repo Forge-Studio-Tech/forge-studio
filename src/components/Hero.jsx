@@ -1,5 +1,83 @@
 const WA_LINK = 'https://wa.me/5514996936966?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20Forge%20Studio%20e%20gostaria%20de%20um%20or%C3%A7amento.'
 
+// "forjado" com bordas em gradiente de fogo + trilhas de circuito horizontais no centro
+function ForgedWord() {
+  return (
+    <svg
+      viewBox="0 0 348 80"
+      aria-label="forjado"
+      style={{
+        display: 'inline',
+        height: '1.1em',
+        width: 'auto',
+        overflow: 'visible',
+        verticalAlign: '-0.12em',
+        filter: 'drop-shadow(0 0 14px rgba(213,133,30,0.5))',
+      }}
+    >
+      <defs>
+        {/* Gradiente horizontal: brasa → cobre → âmbar → ouro */}
+        <linearGradient id="fw-fire" x1="0" y1="0" x2="348" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#c2400a" />
+          <stop offset="26%"  stopColor="#D5851E" />
+          <stop offset="63%"  stopColor="#f59e0b" />
+          <stop offset="100%" stopColor="#fde68a" />
+        </linearGradient>
+
+        {/* Clip path com o shape exato do texto */}
+        <clipPath id="fw-clip">
+          <text x="2" y="70" fontFamily="Inter, system-ui, sans-serif" fontSize="70" fontWeight="900" letterSpacing="-1">forjado</text>
+        </clipPath>
+      </defs>
+
+      {/* Texto: stroke com gradiente nas bordas, fill escuro = fundo aparece no centro */}
+      <text
+        x="2" y="70"
+        fontFamily="Inter, system-ui, sans-serif"
+        fontSize="70"
+        fontWeight="900"
+        letterSpacing="-1"
+        fill="#0c0a09"
+        stroke="url(#fw-fire)"
+        strokeWidth="3"
+        paintOrder="stroke fill"
+      >
+        forjado
+      </text>
+
+      {/* Trilhas horizontais de circuito — recortadas ao shape, por cima do fill escuro */}
+      <g clipPath="url(#fw-clip)">
+        {/* Traces principais — percorrem toda a largura */}
+        <line x1="0" y1="14" x2="348" y2="14" stroke="url(#fw-fire)" strokeWidth="1.2" opacity="0.7" />
+        <line x1="0" y1="32" x2="348" y2="32" stroke="url(#fw-fire)" strokeWidth="1"   opacity="0.6" />
+        <line x1="0" y1="50" x2="348" y2="50" stroke="url(#fw-fire)" strokeWidth="1.2" opacity="0.7" />
+        <line x1="0" y1="63" x2="348" y2="63" stroke="url(#fw-fire)" strokeWidth="0.8" opacity="0.45" />
+
+        {/* Traces parciais — dão variedade e parecem ramificações */}
+        <line x1="0"   y1="23" x2="115" y2="23" stroke="url(#fw-fire)" strokeWidth="0.8" opacity="0.4" />
+        <line x1="218" y1="23" x2="348" y2="23" stroke="url(#fw-fire)" strokeWidth="0.8" opacity="0.4" />
+        <line x1="62"  y1="41" x2="286" y2="41" stroke="url(#fw-fire)" strokeWidth="0.8" opacity="0.4" />
+        <line x1="0"   y1="57" x2="95"  y2="57" stroke="url(#fw-fire)" strokeWidth="0.7" opacity="0.35" />
+        <line x1="252" y1="57" x2="348" y2="57" stroke="url(#fw-fire)" strokeWidth="0.7" opacity="0.35" />
+
+        {/* Vias (nós de interseção) — anel + ponto dourado interno */}
+        {[46, 114, 182, 250, 314].map(x => (
+          <g key={`a-${x}`}>
+            <circle cx={x} cy={14} r="2.6" fill="none" stroke="url(#fw-fire)" strokeWidth="1" opacity="0.85" />
+            <circle cx={x} cy={14} r="0.9" fill="#fde68a" />
+          </g>
+        ))}
+        {[80, 170, 258].map(x => (
+          <g key={`b-${x}`}>
+            <circle cx={x} cy={50} r="2.6" fill="none" stroke="url(#fw-fire)" strokeWidth="1" opacity="0.85" />
+            <circle cx={x} cy={50} r="0.9" fill="#f59e0b" />
+          </g>
+        ))}
+      </g>
+    </svg>
+  )
+}
+
 export default function Hero() {
   return (
     <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-20 pt-24 pb-16 relative overflow-hidden">
@@ -19,7 +97,7 @@ export default function Hero() {
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-stone-100 mb-8">
             Cada projeto<br />
-            <span className="text-copper">forjado</span><br />
+            <ForgedWord /><br />
             do zero.
           </h1>
 
