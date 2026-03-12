@@ -1,16 +1,35 @@
-export default function Navbar() {
+export default function Navbar({ logoRef, heroVisible }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 lg:px-20 py-5 flex items-center justify-between border-b border-stone-800/60 bg-stone-950/80 backdrop-blur-sm">
-      <a href="#" className="flex items-center gap-3">
-        <img src="/ForgeLogo.png" alt="Forge Studio" className="h-10 w-auto" />
+
+      {/* Logo
+          Desktop: sempre visível.
+          Mobile: invisível enquanto Hero está na tela (FloatingLogo cobre),
+                  aparece com fade-in quando Hero sai. */}
+      <a
+        href="#"
+        className={`flex items-center gap-3 transition-opacity duration-500 ${
+          heroVisible
+            ? 'opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto'
+            : 'opacity-100 pointer-events-auto'
+        }`}
+      >
+        <img
+          ref={logoRef}
+          src="/ForgeLogo.png"
+          alt="Forge Studio"
+          className="h-10 w-auto"
+        />
         <span className="text-stone-100 font-black text-xl tracking-tight hidden sm:block">
           Forge Studio
         </span>
       </a>
+
+      {/* Desktop nav */}
       <div className="hidden md:flex items-center gap-8 text-sm text-stone-400">
-        <a href="#portfolio" className="hover:text-cyan-400 transition-colors">Portfólio</a>
-        <a href="#sobre" className="hover:text-cyan-400 transition-colors">Sobre</a>
-        <a href="#faq" className="hover:text-cyan-400 transition-colors">FAQ</a>
+        <a href="#portfolio" className="hover:text-copper transition-colors">Portfólio</a>
+        <a href="#sobre"     className="hover:text-copper transition-colors">Sobre</a>
+        <a href="#faq"       className="hover:text-copper transition-colors">FAQ</a>
         <a
           href="https://wa.me/5514996936966"
           target="_blank"
@@ -20,6 +39,14 @@ export default function Navbar() {
           ORÇAMENTO
         </a>
       </div>
+
+      {/* Mobile nav — seções à direita */}
+      <div className="flex md:hidden items-center gap-5 text-sm font-medium text-stone-400">
+        <a href="#portfolio" className="hover:text-copper transition-colors">Portfólio</a>
+        <a href="#sobre"     className="hover:text-copper transition-colors">Sobre</a>
+        <a href="#faq"       className="hover:text-copper transition-colors">FAQ</a>
+      </div>
+
     </nav>
   )
 }
