@@ -13,11 +13,16 @@ export async function apiFetch(path, options = {}) {
     headers['Content-Type'] = 'application/json'
   }
 
-  const res = await fetch(`${API_URL}${path}`, {
-    credentials: 'include',
-    ...options,
-    headers,
-  })
+  let res
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      credentials: 'include',
+      ...options,
+      headers,
+    })
+  } catch {
+    throw new Error('Erro de conexao com o servidor. Verifique sua internet e tente novamente.')
+  }
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))

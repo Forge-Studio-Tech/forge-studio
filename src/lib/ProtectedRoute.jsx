@@ -17,8 +17,13 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />
   }
 
-  // Redirecionar para tela LGPD se consentimento pendente
-  if (!user.lgpd_consent_at && location.pathname !== '/portal/lgpd') {
+  // Forcar troca de senha temporaria (prioridade sobre LGPD)
+  if (user.must_change_password && location.pathname !== '/portal/change-password') {
+    return <Navigate to="/portal/change-password" replace />
+  }
+
+  // Redirecionar para tela LGPD se consentimento pendente (so apos trocar senha)
+  if (!user.must_change_password && !user.lgpd_consent_at && location.pathname !== '/portal/lgpd') {
     return <Navigate to="/portal/lgpd" replace />
   }
 

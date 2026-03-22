@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApi, apiFetch } from '../../../hooks/useApi.js'
 import { EditIcon, ArchiveIcon, RestoreIcon, ActionBtn } from '../../../components/portal/ActionIcons.jsx'
 
@@ -21,6 +22,7 @@ const STATES = [
 ]
 
 export default function AdminClients() {
+  const navigate = useNavigate()
   const [showArchived, setShowArchived] = useState(false)
   const { data, loading, refetch } = useApi(`/api/clients${showArchived ? '?archived=true' : ''}`)
   const [showModal, setShowModal] = useState(false)
@@ -77,7 +79,7 @@ export default function AdminClients() {
                 </tr>
               ) : (
                 clients.map((c) => (
-                  <tr key={c.id} className="hover:bg-portal-border/10 transition-colors">
+                  <tr key={c.id} onClick={() => navigate(`/portal/admin/clients/${c.id}`)} className="hover:bg-portal-border/10 transition-colors cursor-pointer">
                     <td className="px-6 py-4">
                       <p className="text-portal-text text-sm font-medium">{c.company_name || c.user_name}</p>
                       {c.company_name && <p className="text-portal-muted text-xs">{c.user_name}</p>}
@@ -94,7 +96,7 @@ export default function AdminClients() {
                         <span className="text-warning text-xs font-medium">Pendente</span>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center gap-1">
                         <ActionBtn title="Editar" color="text-copper" hoverColor="hover:text-copper-dark" onClick={() => { setEditing(c); setShowModal(true) }}>
                           <EditIcon />
@@ -154,6 +156,11 @@ function ClientModal({ client, onClose, onSaved }) {
     billing_day: client?.billing_day || '',
     acquisition_channel: client?.acquisition_channel || '',
     domain_renewal_date: client?.domain_renewal_date?.split('T')[0] || '',
+    // Indicacao e comissao
+    referred_by: client?.referred_by || '',
+    has_commission: client?.has_commission || false,
+    commission_type: client?.commission_type || 'percent',
+    commission_value: client?.commission_value || '',
     // Endereco desmembrado
     cep: client?.cep || '',
     street: client?.street || '',
@@ -264,6 +271,46 @@ function ClientModal({ client, onClose, onSaved }) {
           </div>
           <Field label="Data de Renovacao do Dominio" type="date" value={form.domain_renewal_date} onChange={(v) => set('domain_renewal_date', v)} />
 
+          {/* === Indicacao e Comissao === */}
+          {form.acquisition_channel?.toLowerCase() === 'indicacao' && (
+            <>
+              <SectionTitle>Indicacao e Comissao</SectionTitle>
+              <Field label="Indicado por" value={form.referred_by} onChange={(v) => set('referred_by', v)} placeholder="Nome de quem indicou" />
+              <div className="flex items-center gap-2 mt-1">
+                <input
+                  type="checkbox"
+                  id="has_commission"
+                  checked={form.has_commission}
+                  onChange={(e) => set('has_commission', e.target.checked)}
+                  className="rounded border-portal-border"
+                />
+                <label htmlFor="has_commission" className="text-sm text-portal-text">Tem comissao</label>
+              </div>
+              {form.has_commission && (
+                <div className="grid grid-cols-2 gap-4">
+                  <SelectField
+                    label="Tipo de Comissao"
+                    value={form.commission_type}
+                    onChange={(v) => set('commission_type', v)}
+                    options={[
+                      { value: 'percent', label: 'Percentual (%)' },
+                      { value: 'fixed', label: 'Valor fixo (R$)' },
+                    ]}
+                  />
+                  <Field
+                    label={form.commission_type === 'percent' ? 'Comissao (%)' : 'Comissao (R$)'}
+                    type="number"
+                    step="0.01"
+                    value={form.commission_value}
+                    onChange={(v) => set('commission_value', v)}
+                    placeholder={form.commission_type === 'percent' ? 'Ex: 10' : 'Ex: 200'}
+                  />
+                </div>
+              )}
+              <p className="text-portal-muted text-xs">Comissao aplicada apenas sobre o valor da venda do projeto, nao sobre mensalidades.</p>
+            </>
+          )}
+
           {/* === Endereco === */}
           <SectionTitle>Endereco</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -360,7 +407,7 @@ function SectionTitle({ children }) {
 
 const inputClass = "w-full px-3 py-2 bg-portal-bg border border-portal-border rounded-lg text-portal-text text-sm focus:outline-none focus:border-copper disabled:opacity-50"
 
-function Field({ label, value, onChange, type = 'text', required, disabled, placeholder, min, max }) {
+function Field({ label, value, onChange, type = 'text', required, disabled, placeholder, min, max, step }) {
   return (
     <div>
       <label className="block text-sm font-medium text-portal-text mb-1">{label}</label>
@@ -373,6 +420,7 @@ function Field({ label, value, onChange, type = 'text', required, disabled, plac
         placeholder={placeholder}
         min={min}
         max={max}
+        step={step}
         className={inputClass}
       />
     </div>

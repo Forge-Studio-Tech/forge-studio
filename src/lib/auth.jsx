@@ -81,18 +81,23 @@ export function AuthProvider({ children }) {
       return { user: userData }
     }
 
-    const res = await fetch(`${API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    })
+    let res
+    try {
+      res = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      })
+    } catch {
+      throw new Error('Erro de conexao com o servidor. Verifique sua internet e tente novamente.')
+    }
 
     if (!res.ok) {
-      const error = await res.json()
+      const error = await res.json().catch(() => ({}))
       throw new Error(error.message || 'Erro ao fazer login')
     }
 

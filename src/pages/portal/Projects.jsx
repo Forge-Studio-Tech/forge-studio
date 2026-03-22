@@ -128,11 +128,15 @@ export default function Projects() {
                             const isArchived = p.status === 'archived'
                             const action = isArchived ? 'restaurar' : 'arquivar'
                             if (!confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} este projeto?`)) return
-                            await apiFetch(`/api/projects/${p.id}`, {
-                              method: 'PUT',
-                              body: JSON.stringify({ status: isArchived ? 'briefing' : 'archived' }),
-                            })
-                            refetch()
+                            try {
+                              await apiFetch(`/api/projects/${p.id}`, {
+                                method: 'PUT',
+                                body: JSON.stringify({ status: isArchived ? 'briefing' : 'archived' }),
+                              })
+                              refetch()
+                            } catch (err) {
+                              alert('Erro: ' + err.message)
+                            }
                           }}
                         >
                           {p.status === 'archived' ? <RestoreIcon /> : <ArchiveIcon />}

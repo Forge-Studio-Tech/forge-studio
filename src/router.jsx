@@ -9,9 +9,15 @@ import ProjectDetail from './pages/portal/ProjectDetail.jsx'
 import Billing from './pages/portal/Billing.jsx'
 import Settings from './pages/portal/Settings.jsx'
 import AdminClients from './pages/portal/admin/Clients.jsx'
+import ClientDetail from './pages/portal/admin/ClientDetail.jsx'
 import AdminPlans from './pages/portal/admin/Plans.jsx'
 import AdminLgpd from './pages/portal/admin/Lgpd.jsx'
+import PlanTemplates from './pages/portal/admin/PlanTemplates.jsx'
+import DashboardMRR from './pages/portal/admin/DashboardMRR.jsx'
+import Tickets from './pages/portal/Tickets.jsx'
+import TicketDetail from './pages/portal/TicketDetail.jsx'
 import LgpdConsent from './pages/portal/LgpdConsent.jsx'
+import ForcePasswordChange from './pages/portal/ForcePasswordChange.jsx'
 import { AuthProvider } from './lib/auth.jsx'
 import ProtectedRoute from './lib/ProtectedRoute.jsx'
 
@@ -24,6 +30,16 @@ export default function AppRouter() {
 
         {/* Login */}
         <Route path="/login" element={<Login />} />
+
+        {/* Troca de senha obrigatoria — full page, sem layout do portal */}
+        <Route
+          path="/portal/change-password"
+          element={
+            <ProtectedRoute>
+              <ForcePasswordChange />
+            </ProtectedRoute>
+          }
+        />
 
         {/* LGPD consent — full page, sem layout do portal */}
         <Route
@@ -48,12 +64,17 @@ export default function AppRouter() {
           <Route path="projects" element={<Projects />} />
           <Route path="projects/:id" element={<ProjectDetail />} />
           <Route path="billing" element={<Billing />} />
+          <Route path="tickets" element={<Tickets />} />
+          <Route path="tickets/:id" element={<TicketDetail />} />
           <Route path="settings" element={<Settings />} />
 
           {/* Admin only */}
           <Route path="admin/clients" element={<AdminClients />} />
+          <Route path="admin/clients/:id" element={<ClientDetail />} />
           <Route path="admin/plans" element={<AdminPlans />} />
+          <Route path="admin/plan-templates" element={<PlanTemplates />} />
           <Route path="admin/lgpd" element={<AdminLgpd />} />
+          <Route path="admin/dashboard-mrr" element={<DashboardMRR />} />
         </Route>
       </Routes>
     </AuthProvider>

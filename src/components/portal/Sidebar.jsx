@@ -5,22 +5,30 @@ const clientLinks = [
   { to: '/portal', label: 'Dashboard', icon: HomeIcon, end: true },
   { to: '/portal/projects', label: 'Projetos', icon: FolderIcon },
   { to: '/portal/billing', label: 'Financeiro', icon: DollarIcon },
+  { to: '/portal/tickets', label: 'Solicitações', icon: TicketIcon },
   { to: '/portal/settings', label: 'Configurações', icon: GearIcon },
 ]
 
-const adminLinks = [
+const adminMainLinks = [
   { to: '/portal', label: 'Mission Control', icon: HomeIcon, end: true },
   { to: '/portal/admin/clients', label: 'Clientes', icon: UsersIcon },
   { to: '/portal/projects', label: 'Projetos', icon: FolderIcon },
   { to: '/portal/admin/plans', label: 'Planos', icon: TagIcon },
   { to: '/portal/billing', label: 'Financeiro', icon: DollarIcon },
-  { to: '/portal/admin/lgpd', label: 'LGPD', icon: ShieldIcon },
+  { to: '/portal/tickets', label: 'Solicitações', icon: TicketIcon },
   { to: '/portal/settings', label: 'Configurações', icon: GearIcon },
+]
+
+const adminSectionLinks = [
+  { to: '/portal/admin/dashboard-mrr', label: 'Dashboard MRR', icon: ChartIcon },
+  { to: '/portal/admin/plan-templates', label: 'Tipos de Plano', icon: CubeIcon },
+  { to: '/portal/admin/lgpd', label: 'LGPD', icon: ShieldIcon },
 ]
 
 export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
   const { user, logout } = useAuth()
-  const links = user?.role === 'admin' ? adminLinks : clientLinks
+  const isAdmin = user?.role === 'admin'
+  const mainLinks = isAdmin ? adminMainLinks : clientLinks
 
   return (
     <>
@@ -54,25 +62,24 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
 
         {/* Nav */}
         <nav className="flex-1 py-4 overflow-y-auto">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.end}
-              onClick={onMobileClose}
-              className={({ isActive }) => `
-                flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-sm
-                transition-colors duration-200
-                ${isActive
-                  ? 'bg-copper/10 text-copper font-semibold'
-                  : 'text-portal-muted hover:text-portal-text hover:bg-portal-border/30'
-                }
-              `}
-            >
-              <link.icon className="w-5 h-5 shrink-0" />
-              {!collapsed && <span className="truncate">{link.label}</span>}
-            </NavLink>
+          {mainLinks.map((link) => (
+            <SidebarLink key={link.to} link={link} collapsed={collapsed} onClick={onMobileClose} />
           ))}
+
+          {/* Seção Administração — só admin */}
+          {isAdmin && (
+            <>
+              <div className="mx-4 my-3 border-t border-portal-border" />
+              {!collapsed && (
+                <p className="px-4 mb-1 text-[10px] font-semibold text-portal-muted uppercase tracking-widest">
+                  Administração
+                </p>
+              )}
+              {adminSectionLinks.map((link) => (
+                <SidebarLink key={link.to} link={link} collapsed={collapsed} onClick={onMobileClose} />
+              ))}
+            </>
+          )}
         </nav>
 
         {/* Footer — user info */}
@@ -102,6 +109,27 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
         </button>
       </aside>
     </>
+  )
+}
+
+function SidebarLink({ link, collapsed, onClick }) {
+  return (
+    <NavLink
+      to={link.to}
+      end={link.end}
+      onClick={onClick}
+      className={({ isActive }) => `
+        flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-sm
+        transition-colors duration-200
+        ${isActive
+          ? 'bg-copper/10 text-copper font-semibold'
+          : 'text-portal-muted hover:text-portal-text hover:bg-portal-border/30'
+        }
+      `}
+    >
+      <link.icon className="w-5 h-5 shrink-0" />
+      {!collapsed && <span className="truncate">{link.label}</span>}
+    </NavLink>
   )
 }
 
@@ -169,6 +197,30 @@ function LogoutIcon({ className }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+    </svg>
+  )
+}
+
+function CubeIcon({ className }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+    </svg>
+  )
+}
+
+function TicketIcon({ className }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
+    </svg>
+  )
+}
+
+function ChartIcon({ className }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
     </svg>
   )
 }

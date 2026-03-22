@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
 import { apiFetch } from '../../hooks/useApi.js'
 
 export default function LgpdConsent() {
   const { user, checkSession } = useAuth()
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     privacy_policy: false,
     data_processing: false,
@@ -26,6 +28,7 @@ export default function LgpdConsent() {
         body: JSON.stringify(form),
       })
       await checkSession()
+      navigate('/portal', { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { useApi } from '../../hooks/useApi.js'
 import StatCard from '../../components/portal/StatCard.jsx'
 
@@ -6,6 +7,7 @@ export default function AdminDashboard() {
   const { data: projectsData } = useApi('/api/projects')
   const { data: summaryData } = useApi('/api/payments/summary')
 
+  const navigate = useNavigate()
   const clients = clientsData?.clients || []
   const projects = projectsData?.projects || []
   const summary = summaryData?.summary || {}
@@ -50,7 +52,11 @@ export default function AdminDashboard() {
               <p className="text-portal-muted text-sm text-center p-6">Nenhum projeto cadastrado.</p>
             ) : (
               projects.slice(0, 5).map((p) => (
-                <div key={p.id} className="px-5 py-3 flex items-center justify-between">
+                <div
+                  key={p.id}
+                  className="px-5 py-3 flex items-center justify-between cursor-pointer hover:bg-portal-border/10 transition-colors"
+                  onClick={() => navigate(`/portal/projects/${p.id}`)}
+                >
                   <div>
                     <p className="text-portal-text text-sm font-medium">{p.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
@@ -82,7 +88,11 @@ export default function AdminDashboard() {
               <p className="text-portal-muted text-sm text-center p-6">Nenhum cliente cadastrado.</p>
             ) : (
               clients.slice(0, 5).map((c) => (
-                <div key={c.id} className="px-5 py-3 flex items-center justify-between">
+                <div
+                  key={c.id}
+                  className="px-5 py-3 flex items-center justify-between cursor-pointer hover:bg-portal-border/10 transition-colors"
+                  onClick={() => navigate(`/portal/admin/clients/${c.id}`)}
+                >
                   <div>
                     <p className="text-portal-text text-sm font-medium">{c.company_name || c.user_name}</p>
                     <p className="text-portal-muted text-xs">{c.email}</p>
