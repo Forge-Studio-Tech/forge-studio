@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../lib/auth.jsx'
-import { apiFetch } from '../../hooks/useApi.js'
+import { apiFetch, useApi } from '../../hooks/useApi.js'
 
 export default function Settings() {
   const { user } = useAuth()
