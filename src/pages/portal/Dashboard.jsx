@@ -19,6 +19,7 @@ function ClientDashboard({ user }) {
   const { data: projectsData, loading: loadingProjects } = useApi('/api/projects')
   const { data: paymentsData, loading: loadingPayments } = useApi('/api/payments')
   const { data: monitorData } = useApi('/api/monitoring')
+  const { data: analyticsData } = useApi('/api/analytics')
 
   const projects = projectsData?.projects || []
   const payments = paymentsData?.payments || []
@@ -54,6 +55,11 @@ function ClientDashboard({ user }) {
       {/* Monitoramento detalhado */}
       {firstSite && (
         <MonitoringCard site={firstSite} />
+      )}
+
+      {/* Analytics resumo */}
+      {analyticsData?.sites?.length > 0 && (
+        <AnalyticsCard site={analyticsData.sites[0]} />
       )}
 
       <section>
@@ -213,6 +219,130 @@ function MonitoringCard({ site }) {
           </Link>
         </div>
       )}
+    </div>
+  )
+}
+
+function AnalyticsCard({ site }) {
+  const [expanded, setExpanded] = useState(false)
+  const { data } = expanded ? {} : { data: null }
+  const trendColor = site.trend > 0 ? 'text-success' : site.trend < 0 ? 'text-danger' : 'text-portal-muted'
+  const trendIcon = site.trend > 0 ? '↑' : site.trend < 0 ? '↓' : ''
+
+  return (
+    <div className="rounded-xl border border-portal-border bg-portal-surface overflow-hidden mb-8">
+      <div
+        className="p-5 cursor-pointer hover:bg-portal-border/10 transition-colors"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <svg className="w-5 h-5 text-copper" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+            </svg>
+            <div>
+              <p className="text-portal-text font-semibold">Analytics</p>
+              <span className="text-portal-muted text-xs">
+                {site.visitors_7d != null
+                  ? `${site.visitors_7d} visitantes esta semana`
+                  : 'Sem dados'}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {site.trend != null && site.trend !== 0 && (
+              <span className={`text-xs font-medium ${trendColor}`}>
+                {trendIcon} {Math.abs(site.trend)}%
+              </span>
+            )}
+            <svg className={`w-4 h-4 text-portal-muted transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {expanded && <AnalyticsCardDetail projectId={site.project_id} />}
+    </div>
+  )
+}
+
+function AnalyticsCardDetail({ projectId }) {
+  const { data, loading } = useApi(`/api/analytics/${projectId}?period=7d`)
+
+  if (loading) return <div className="px-5 pb-5 text-portal-muted text-xs">Carregando...</div>
+  if (!data) return null
+
+  const { visitors_by_day, sources, engagement } = data
+
+  return (
+    <div className="border-t border-portal-border px-5 pb-4 pt-4 space-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-portal-bg rounded-lg p-3">
+          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Visitantes</p>
+          <p className="text-lg font-bold text-portal-text">{visitors_by_day.reduce((s, d) => s + d.visitors, 0)}</p>
+        </div>
+        <div className="bg-portal-bg rounded-lg p-3">
+          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Sessões</p>
+          <p className="text-lg font-bold text-portal-text">{visitors_by_day.reduce((s, d) => s + d.sessions, 0)}</p>
+        </div>
+        <div className="bg-portal-bg rounded-lg p-3">
+          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Bounce Rate</p>
+          <p className="text-lg font-bold text-portal-text">{engagement.bounce_rate}%</p>
+        </div>
+        <div className="bg-portal-bg rounded-lg p-3">
+          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Tempo Médio</p>
+          <p className="text-lg font-bold text-portal-text">
+            {engagement.avg_session_duration < 60 ? `${engagement.avg_session_duration}s` : `${Math.floor(engagement.avg_session_duration / 60)}m`}
+          </p>
+        </div>
+      </div>
+
+      {visitors_by_day.length > 1 && (
+        <div>
+          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-1.5">Visitantes (7 dias)</p>
+          <div className="bg-portal-bg rounded-lg p-2">
+            <svg viewBox="0 0 600 50" className="w-full h-10" preserveAspectRatio="none">
+              {(() => {
+                const maxV = Math.max(...visitors_by_day.map((d) => d.visitors))
+                return (
+                  <polyline
+                    fill="none"
+                    stroke="#D5851E"
+                    strokeWidth="1.5"
+                    vectorEffect="non-scaling-stroke"
+                    points={visitors_by_day.map((d, i) => `${(i / (visitors_by_day.length - 1)) * 600},${46 - (d.visitors / maxV) * 40}`).join(' ')}
+                  />
+                )
+              })()}
+            </svg>
+          </div>
+        </div>
+      )}
+
+      {sources.length > 0 && (
+        <div>
+          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-1.5">Fontes de Tráfego</p>
+          <div className="space-y-1.5">
+            {sources.slice(0, 4).map((s) => (
+              <div key={s.source} className="flex items-center gap-2 text-xs">
+                <div className="h-1.5 bg-portal-border/30 rounded-full overflow-hidden flex-1">
+                  <div className="h-full bg-copper/20 rounded-full" style={{ width: `${s.percentage}%` }} />
+                </div>
+                <span className="text-portal-text capitalize w-20 truncate">{s.source}</span>
+                <span className="text-portal-muted w-8 text-right">{s.percentage}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <Link
+        to="/portal/analytics"
+        className="block text-center text-copper hover:text-copper-dark text-xs pt-2"
+      >
+        Ver análise completa →
+      </Link>
     </div>
   )
 }

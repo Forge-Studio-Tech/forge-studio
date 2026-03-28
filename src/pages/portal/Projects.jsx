@@ -175,6 +175,9 @@ function ProjectModal({ project, clients, onClose, onSaved }) {
     production_url: project?.production_url || '',
     started_at: project?.started_at?.split('T')[0] || '',
     delivered_at: project?.delivered_at?.split('T')[0] || '',
+    zabbix_host_id: project?.zabbix_host_id || '',
+    ga_property_id: project?.ga_property_id || '',
+    analytics_enabled: project?.analytics_enabled || false,
   })
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -190,6 +193,8 @@ function ProjectModal({ project, clients, onClose, onSaved }) {
       if (!payload.domain) delete payload.domain
       if (!payload.preview_url) delete payload.preview_url
       if (!payload.production_url) delete payload.production_url
+      if (!payload.zabbix_host_id) delete payload.zabbix_host_id
+      if (!payload.ga_property_id) delete payload.ga_property_id
 
       if (isEdit) {
         await apiFetch(`/api/projects/${project.id}`, {
@@ -272,6 +277,29 @@ function ProjectModal({ project, clients, onClose, onSaved }) {
               <label className="block text-sm font-medium text-portal-text mb-1">Entrega</label>
               <input type="date" value={form.delivered_at} onChange={(e) => setForm({ ...form, delivered_at: e.target.value })} className={inputClass} />
             </div>
+          </div>
+          {/* Integrações (admin only) */}
+          <div className="border-t border-portal-border pt-4 mt-2">
+            <p className="text-[10px] font-semibold text-portal-muted uppercase tracking-widest mb-3">Integrações</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-portal-text mb-1">Zabbix Host ID</label>
+                <input type="text" value={form.zabbix_host_id} onChange={(e) => setForm({ ...form, zabbix_host_id: e.target.value })} placeholder="10776" className={inputClass} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-portal-text mb-1">GA Property ID</label>
+                <input type="text" value={form.ga_property_id} onChange={(e) => setForm({ ...form, ga_property_id: e.target.value })} placeholder="123456789" className={inputClass} />
+              </div>
+            </div>
+            <label className="flex items-center gap-2 mt-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.analytics_enabled}
+                onChange={(e) => setForm({ ...form, analytics_enabled: e.target.checked })}
+                className="rounded border-portal-border text-copper focus:ring-copper"
+              />
+              <span className="text-sm text-portal-text">Forçar Analytics ativo (cortesia)</span>
+            </label>
           </div>
           {error && <p className="text-danger text-sm">{error}</p>}
           <div className="flex gap-3 justify-end pt-2">
