@@ -33,20 +33,7 @@ export default function Settings() {
         {user?.role === 'admin' && <TwoFactorSection />}
 
         {/* LGPD */}
-        <section className="bg-portal-surface border border-portal-border rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-portal-text mb-4">Privacidade (LGPD)</h2>
-          <div className="space-y-2">
-            <button className="text-copper hover:text-copper-dark text-sm font-medium transition-colors block">
-              Ver meus dados
-            </button>
-            <button className="text-copper hover:text-copper-dark text-sm font-medium transition-colors block">
-              Exportar meus dados
-            </button>
-            <button className="text-danger hover:text-danger/80 text-sm font-medium transition-colors block">
-              Solicitar exclusão da conta
-            </button>
-          </div>
-        </section>
+        <LgpdSection />
       </div>
     </div>
   )
@@ -327,6 +314,229 @@ function bufferToBase64(buffer) {
   let str = ''
   for (const b of bytes) str += String.fromCharCode(b)
   return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+}
+
+function LgpdSection() {
+  const [showData, setShowData] = useState(false)
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleViewData() {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await apiFetch('/api/lgpd/my-data')
+      setData(res)
+      setShowData(true)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleExportData() {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await apiFetch('/api/lgpd/my-data')
+      const blob = new Blob([JSON.stringify(res, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `meus-dados-${new Date().toISOString().split('T')[0]}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <>
+      <section className="bg-portal-surface border border-portal-border rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-portal-text mb-4">Privacidade (LGPD)</h2>
+        {error && (
+          <div className="bg-danger/10 border border-danger/30 rounded-lg p-3 mb-4">
+            <p className="text-danger text-sm">{error}</p>
+          </div>
+        )}
+        <div className="space-y-2">
+          <button
+            onClick={handleViewData}
+            disabled={loading}
+            className="text-copper hover:text-copper-dark text-sm font-medium transition-colors block disabled:opacity-50"
+          >
+            {loading ? 'Carregando...' : 'Ver meus dados'}
+          </button>
+          <button
+            onClick={handleExportData}
+            disabled={loading}
+            className="text-copper hover:text-copper-dark text-sm font-medium transition-colors block disabled:opacity-50"
+          >
+            Exportar meus dados
+          </button>
+          <button className="text-danger hover:text-danger/80 text-sm font-medium transition-colors block">
+            Solicitar exclusão da conta
+          </button>
+        </div>
+      </section>
+
+      {showData && data && (
+        <MyDataModal data={data} onClose={() => setShowData(false)} />
+      )}
+    </>
+  )
+}
+
+const STATUS_PT = { pending: 'Pendente', paid: 'Pago', overdue: 'Atrasado', cancelled: 'Cancelado' }
+const PROJECT_STATUS_PT = { briefing: 'Briefing', design: 'Design', development: 'Desenvolvimento', review: 'Revisão', published: 'Publicado', maintenance: 'Manutenção', archived: 'Arquivado' }
+const PROJECT_TYPE_PT = { landing_page: 'Landing Page', site: 'Site Institucional', system: 'Sistema' }
+const PLAN_TYPE_PT = { hosting: 'Hospedagem', maintenance: 'Manutenção', combo: 'Combo' }
+const AUDIT_ACTION_PT = { consent_granted: 'Consentimento aceito', data_access: 'Visualização de dados', data_export: 'Exportação de dados', impersonation_start: 'Início de impersonação', impersonation_stop: 'Fim de impersonação' }
+
+function MyDataModal({ data, onClose }) {
+  const { personal, consent, projects, payments, plans, audit_log } = data
+
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-portal-surface border border-portal-border rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-6 border-b border-portal-border">
+          <h2 className="text-lg font-bold text-portal-text">Meus Dados Pessoais</h2>
+          <button onClick={onClose} className="text-portal-muted hover:text-portal-text transition-colors">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {/* Dados pessoais */}
+          <div>
+            <h3 className="text-xs font-semibold text-portal-muted uppercase tracking-wider mb-3">Dados Pessoais</h3>
+            <div className="bg-portal-bg rounded-lg p-4 space-y-2">
+              <DataRow label="Nome" value={personal.name} />
+              <DataRow label="Email" value={personal.email} />
+              {personal.phone && <DataRow label="Telefone" value={personal.phone} />}
+              {personal.company_name && <DataRow label="Empresa" value={personal.company_name} />}
+              {personal.cnpj_cpf && <DataRow label="CPF/CNPJ" value={personal.cnpj_cpf} />}
+              {personal.segment && <DataRow label="Segmento" value={personal.segment} />}
+              {personal.address && <DataRow label="Endereço" value={personal.address} />}
+              <DataRow label="Conta criada em" value={new Date(personal.account_created).toLocaleDateString('pt-BR')} />
+            </div>
+          </div>
+
+          {/* Consentimento */}
+          <div>
+            <h3 className="text-xs font-semibold text-portal-muted uppercase tracking-wider mb-3">Consentimento LGPD</h3>
+            <div className="bg-portal-bg rounded-lg p-4 space-y-2">
+              <DataRow label="Situação" value={consent.accepted_at ? 'Aceito' : 'Pendente'} />
+              {consent.accepted_at && <DataRow label="Aceito em" value={new Date(consent.accepted_at).toLocaleString('pt-BR')} />}
+              {consent.version && <DataRow label="Versão" value={consent.version} />}
+            </div>
+          </div>
+
+          {/* Projetos */}
+          {projects.length > 0 && (
+            <div>
+              <h3 className="text-xs font-semibold text-portal-muted uppercase tracking-wider mb-3">Projetos ({projects.length})</h3>
+              <div className="space-y-2">
+                {projects.map((p, i) => (
+                  <div key={i} className="bg-portal-bg rounded-lg p-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-portal-text text-sm font-medium">{p.name}</p>
+                      <p className="text-portal-muted text-xs">{PROJECT_TYPE_PT[p.type] || p.type} — {p.domain || '—'}</p>
+                    </div>
+                    <span className="text-xs text-portal-muted">{PROJECT_STATUS_PT[p.status] || p.status}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Planos */}
+          {plans.length > 0 && (
+            <div>
+              <h3 className="text-xs font-semibold text-portal-muted uppercase tracking-wider mb-3">Planos ({plans.length})</h3>
+              <div className="space-y-2">
+                {plans.map((pl, i) => (
+                  <div key={i} className="bg-portal-bg rounded-lg p-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-portal-text text-sm font-medium">{PLAN_TYPE_PT[pl.type] || pl.type}</p>
+                      <p className="text-portal-muted text-xs capitalize">{pl.tier || '—'}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-portal-text text-sm font-medium">R$ {Number(pl.monthly_value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                      <p className="text-portal-muted text-xs">{pl.is_active ? 'Ativo' : 'Inativo'}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pagamentos */}
+          {payments.length > 0 && (
+            <div>
+              <h3 className="text-xs font-semibold text-portal-muted uppercase tracking-wider mb-3">Pagamentos (últimos 24)</h3>
+              <div className="bg-portal-bg rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-portal-border">
+                      <th className="text-left px-4 py-2 text-xs text-portal-muted font-medium">Referência</th>
+                      <th className="text-left px-4 py-2 text-xs text-portal-muted font-medium">Valor</th>
+                      <th className="text-left px-4 py-2 text-xs text-portal-muted font-medium">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-portal-border">
+                    {payments.map((pay, i) => (
+                      <tr key={i}>
+                        <td className="px-4 py-2 text-portal-text">{pay.reference_month || '—'}</td>
+                        <td className="px-4 py-2 text-portal-text">R$ {Number(pay.amount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                        <td className="px-4 py-2 text-portal-muted">{STATUS_PT[pay.status] || pay.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Audit log */}
+          {audit_log.length > 0 && (
+            <div>
+              <h3 className="text-xs font-semibold text-portal-muted uppercase tracking-wider mb-3">Registro de Acessos</h3>
+              <div className="bg-portal-bg rounded-lg p-4 space-y-1 max-h-40 overflow-y-auto">
+                {audit_log.map((log, i) => (
+                  <p key={i} className="text-portal-muted text-xs">
+                    {new Date(log.created_at).toLocaleString('pt-BR')} — {AUDIT_ACTION_PT[log.action] || log.action} — IP: {log.ip_address}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="p-6 border-t border-portal-border text-center">
+          <p className="text-portal-muted text-xs">
+            Dados coletados conforme a Lei Geral de Proteção de Dados (LGPD). Para dúvidas, entre em contato pelo WhatsApp.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DataRow({ label, value }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <span className="text-portal-muted text-xs shrink-0">{label}</span>
+      <span className="text-portal-text text-sm text-right">{value || '—'}</span>
+    </div>
+  )
 }
 
 function SecuritySection() {
