@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../lib/auth.jsx'
 import { useApi } from '../../hooks/useApi.js'
 import { Link } from 'react-router-dom'
@@ -50,29 +51,9 @@ function ClientDashboard({ user }) {
         <StatCard label="Pagamentos Pendentes" value={loadingPayments ? '...' : String(pendingPayments.length)} />
       </div>
 
-      {/* Monitoramento */}
+      {/* Monitoramento detalhado */}
       {firstSite && (
-        <Link
-          to="/portal/monitoring"
-          className={`block rounded-xl border p-4 mb-8 transition-colors hover:border-copper/40 ${
-            firstSite.status === 'offline'
-              ? 'bg-danger/5 border-danger/30'
-              : 'bg-success/5 border-success/30'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className={`w-3 h-3 rounded-full ${firstSite.status === 'offline' ? 'bg-danger animate-pulse' : 'bg-success'}`} />
-              <span className="text-portal-text text-sm font-medium">
-                {firstSite.status === 'offline'
-                  ? 'Seu site está fora do ar'
-                  : `Seu site está online${firstSite.response_time_ms ? ` — ${firstSite.response_time_ms}ms` : ''}`
-                }
-              </span>
-            </div>
-            <span className="text-portal-muted text-xs">Ver detalhes →</span>
-          </div>
-        </Link>
+        <MonitoringCard site={firstSite} />
       )}
 
       <section>
@@ -101,6 +82,107 @@ function ClientDashboard({ user }) {
           </div>
         )}
       </section>
+    </div>
+  )
+}
+
+function MonitoringCard({ site }) {
+  const { data } = useApi(`/api/monitoring/${site.project_id}`)
+  const [, setTick] = useState(0)
+
+  // Auto-refresh a cada 2 min
+  useEffect(() => {
+    const interval = setInterval(() => setTick((t) => t + 1), 2 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const detail = data?.site
+  const history = data?.history || []
+  const incidents = data?.incidents || []
+
+  const dotBg = site.status === 'online' ? 'bg-success' : site.status === 'offline' ? 'bg-danger' : 'bg-portal-muted'
+  const borderColor = site.status === 'offline' ? 'border-danger/30' : 'border-success/30'
+  const statusLabel = site.status === 'online' ? 'Online' : site.status === 'offline' ? 'Fora do ar' : 'Desconhecido'
+  const statusColor = site.status === 'online' ? 'text-success' : site.status === 'offline' ? 'text-danger' : 'text-portal-muted'
+
+  return (
+    <div className={`rounded-xl border ${borderColor} bg-portal-surface overflow-hidden mb-8`}>
+      {/* Header */}
+      <div className="p-5 pb-3">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <span className={`w-3 h-3 rounded-full ${dotBg} ${site.status === 'offline' ? 'animate-pulse' : ''}`} />
+            <div>
+              <p className="text-portal-text font-semibold">{site.project_name}</p>
+              <a
+                href={site.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-copper hover:text-copper-dark text-xs"
+              >
+                {site.url?.replace(/^https?:\/\//, '')}
+              </a>
+            </div>
+          </div>
+          <span className={`text-sm font-semibold ${statusColor}`}>{statusLabel}</span>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-portal-bg rounded-lg p-3">
+            <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Uptime 24h</p>
+            <p className={`text-lg font-bold ${
+              detail?.uptime_24h >= 99.9 ? 'text-success' : detail?.uptime_24h >= 99 ? 'text-warning' : detail ? 'text-danger' : 'text-portal-muted'
+            }`}>
+              {detail ? `${detail.uptime_24h}%` : '...'}
+            </p>
+          </div>
+          <div className="bg-portal-bg rounded-lg p-3">
+            <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Resposta</p>
+            <p className="text-lg font-bold text-portal-text">
+              {site.response_time_ms != null ? `${site.response_time_ms}ms` : '—'}
+            </p>
+          </div>
+          <div className="bg-portal-bg rounded-lg p-3">
+            <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Incidentes</p>
+            <p className={`text-lg font-bold ${incidents.length > 0 ? 'text-danger' : 'text-success'}`}>
+              {data ? incidents.length : '...'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Mini gráfico */}
+      {history.length > 1 && (
+        <div className="px-5 pb-2">
+          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-1.5">Tempo de Resposta (24h)</p>
+          <div className="bg-portal-bg rounded-lg p-2">
+            <svg viewBox={`0 0 ${Math.min(history.length, 100)} 50`} className="w-full h-12" preserveAspectRatio="none">
+              {(() => {
+                const step = Math.max(1, Math.floor(history.length / 100))
+                const sampled = history.filter((_, i) => i % step === 0)
+                const maxMs = Math.max(...sampled.map((h) => h.response_time_ms))
+                return (
+                  <polyline
+                    fill="none"
+                    stroke="#D5851E"
+                    strokeWidth="1.5"
+                    points={sampled.map((h, i) => `${i},${48 - (h.response_time_ms / maxMs) * 44}`).join(' ')}
+                  />
+                )
+              })()}
+            </svg>
+          </div>
+        </div>
+      )}
+
+      {/* Footer link */}
+      <Link
+        to="/portal/monitoring"
+        className="block text-center text-copper hover:text-copper-dark text-xs py-3 border-t border-portal-border/50 transition-colors"
+      >
+        Ver todos os detalhes →
+      </Link>
     </div>
   )
 }
