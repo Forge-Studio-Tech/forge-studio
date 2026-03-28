@@ -44,9 +44,10 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
 
       <aside
         className={`
-          fixed top-0 left-0 h-full z-50 flex flex-col
+          fixed left-0 z-50 flex flex-col
           bg-portal-surface border-r border-portal-border
           transition-all duration-300 ease-in-out
+          ${impersonating ? 'top-10 h-[calc(100%-2.5rem)]' : 'top-0 h-full'}
           ${collapsed ? 'w-16' : 'w-60'}
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
