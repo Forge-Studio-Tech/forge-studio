@@ -6,7 +6,7 @@ import { EditIcon, ArchiveIcon, RestoreIcon, ActionBtn } from '../../components/
 
 const STATUS_LABELS = {
   briefing: 'Briefing', design: 'Design', development: 'Desenvolvimento',
-  review: 'Revisao', published: 'Publicado', maintenance: 'Manutencao',
+  review: 'Revisão', published: 'Publicado', maintenance: 'Manutenção',
   archived: 'Arquivado',
 }
 const STATUS_COLORS = {
@@ -80,7 +80,7 @@ export default function Projects() {
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Status</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">Links</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">Tipo</th>
-                {isAdmin && <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Acao</th>}
+                {isAdmin && <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Ação</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-portal-border">
@@ -245,14 +245,14 @@ function ProjectModal({ project, clients, onClose, onSaved }) {
                 <option value="briefing">Briefing</option>
                 <option value="design">Design</option>
                 <option value="development">Desenvolvimento</option>
-                <option value="review">Revisao</option>
+                <option value="review">Revisão</option>
                 <option value="published">Publicado</option>
-                <option value="maintenance">Manutencao</option>
+                <option value="maintenance">Manutenção</option>
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-portal-text mb-1">Dominio</label>
+            <label className="block text-sm font-medium text-portal-text mb-1">Domínio</label>
             <input type="text" value={form.domain} onChange={(e) => setForm({ ...form, domain: e.target.value })} placeholder="exemplo.com.br" className={inputClass} />
           </div>
           <div>

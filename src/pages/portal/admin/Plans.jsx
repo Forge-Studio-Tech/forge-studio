@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { useApi, apiFetch } from '../../../hooks/useApi.js'
 import { EditIcon, DeactivateIcon, ActionBtn } from '../../../components/portal/ActionIcons.jsx'
 
-const TYPE_LABELS = { hosting: 'Hosting', maintenance: 'Manutencao', full: 'Completo' }
-const TIER_LABELS = { basic: 'Basico', standard: 'Padrao', premium: 'Premium' }
+const TYPE_LABELS = { hosting: 'Hosting', maintenance: 'Manutenção', full: 'Completo' }
+const TIER_LABELS = { basic: 'Básico', standard: 'Padrão', premium: 'Premium' }
 
 function DeleteIcon() {
   return (
@@ -43,7 +43,7 @@ export default function AdminPlans() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-portal-text">Planos</h1>
-          <p className="text-portal-muted text-sm mt-1">Gerencie planos e servicos contratados</p>
+          <p className="text-portal-muted text-sm mt-1">Gerencie planos e serviços contratados</p>
         </div>
         <button
           onClick={() => { setEditing(null); setShowModal(true) }}
@@ -82,9 +82,9 @@ export default function AdminPlans() {
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">Projeto</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Tipo</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Valor</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden lg:table-cell">Cobranca</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden lg:table-cell">Cobrança</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Status</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Acao</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Ação</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-portal-border">
@@ -369,14 +369,14 @@ function PlanModal({ plan, clients, projects, onClose, onSaved }) {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-portal-text mb-1">Dia de cobranca *</label>
+              <label className="block text-sm font-medium text-portal-text mb-1">Dia de cobrança *</label>
               <select value={form.billing_day} onChange={(e) => setForm({ ...form, billing_day: e.target.value })} className={selectClass}>
                 {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => (
                   <option key={d} value={d}>Dia {d}</option>
                 ))}
               </select>
               {parseInt(form.billing_day) > 28 && (
-                <p className="text-portal-muted text-xs mt-1">Em fev. sera cobrado no ultimo dia</p>
+                <p className="text-portal-muted text-xs mt-1">Em fev. será cobrado no último dia</p>
               )}
             </div>
           </div>

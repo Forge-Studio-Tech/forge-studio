@@ -17,7 +17,7 @@ export default function LgpdConsent() {
   async function handleSubmit(e) {
     e.preventDefault()
     if (!form.privacy_policy || !form.data_processing) {
-      setError('Voce precisa aceitar os consentimentos obrigatorios para continuar.')
+      setError('Você precisa aceitar os consentimentos obrigatórios para continuar.')
       return
     }
     setSaving(true)
@@ -43,7 +43,7 @@ export default function LgpdConsent() {
           <img src="/ForgeLogo.png" alt="Forge Studio" className="h-12 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-portal-text">Bem-vindo, {user?.name?.split(' ')[0]}</h1>
           <p className="text-portal-muted text-sm mt-2">
-            Antes de continuar, precisamos do seu consentimento conforme a Lei Geral de Protecao de Dados (LGPD).
+            Antes de continuar, precisamos do seu consentimento conforme a Lei Geral de Proteção de Dados (LGPD).
           </p>
         </div>
 
@@ -53,26 +53,26 @@ export default function LgpdConsent() {
           <div className="space-y-4 mb-6">
             <Section title="Dados coletados">
               <ul className="list-disc list-inside space-y-1">
-                <li>Nome, email e telefone para identificacao e contato</li>
-                <li>Dados da empresa (razao social, CNPJ/CPF, endereco) para prestacao de servicos</li>
-                <li>Informacoes de projetos e servicos contratados</li>
-                <li>Dados de pagamento e historico financeiro</li>
-                <li>IP e dados de sessao para seguranca da plataforma</li>
+                <li>Nome, email e telefone para identificação e contato</li>
+                <li>Dados da empresa (razão social, CNPJ/CPF, endereço) para prestação de serviços</li>
+                <li>Informações de projetos e serviços contratados</li>
+                <li>Dados de pagamento e histórico financeiro</li>
+                <li>IP e dados de sessão para segurança da plataforma</li>
               </ul>
             </Section>
 
             <Section title="Finalidade do tratamento">
               <ul className="list-disc list-inside space-y-1">
-                <li>Prestacao dos servicos contratados (sites, landing pages, sistemas)</li>
-                <li>Gestao de projetos e acompanhamento de status</li>
-                <li>Emissao de cobrancas e controle financeiro</li>
-                <li>Comunicacao sobre andamento de projetos e servicos</li>
-                <li>Seguranca e auditoria de acesso a plataforma</li>
+                <li>Prestação dos serviços contratados (sites, landing pages, sistemas)</li>
+                <li>Gestão de projetos e acompanhamento de status</li>
+                <li>Emissão de cobranças e controle financeiro</li>
+                <li>Comunicação sobre andamento de projetos e serviços</li>
+                <li>Segurança e auditoria de acesso a plataforma</li>
               </ul>
             </Section>
 
             <Section title="Seus direitos">
-              <p>Voce pode a qualquer momento solicitar acesso, correcao, exportacao ou exclusao dos seus dados pessoais atraves das configuracoes da sua conta ou entrando em contato conosco.</p>
+              <p>Você pode a qualquer momento solicitar acesso, correção, exportação ou exclusão dos seus dados pessoais através das configurações da sua conta ou entrando em contato conosco.</p>
             </Section>
           </div>
 
@@ -82,7 +82,7 @@ export default function LgpdConsent() {
               checked={form.privacy_policy}
               onChange={(v) => setForm({ ...form, privacy_policy: v })}
               required
-              label="Li e aceito a Politica de Privacidade"
+              label="Li e aceito a Política de Privacidade"
               tag="Obrigatorio"
             />
 
@@ -91,7 +91,7 @@ export default function LgpdConsent() {
               checked={form.data_processing}
               onChange={(v) => setForm({ ...form, data_processing: v })}
               required
-              label="Autorizo o tratamento dos meus dados para execucao dos servicos contratados"
+              label="Autorizo o tratamento dos meus dados para execução dos serviços contratados"
               tag="Obrigatorio"
             />
 
@@ -99,7 +99,7 @@ export default function LgpdConsent() {
               id="marketing"
               checked={form.marketing}
               onChange={(v) => setForm({ ...form, marketing: v })}
-              label="Autorizo o envio de comunicacoes sobre novidades e servicos via WhatsApp ou email"
+              label="Autorizo o envio de comunicações sobre novidades e serviços via WhatsApp ou email"
               tag="Opcional"
             />
 
@@ -115,7 +115,7 @@ export default function LgpdConsent() {
           </form>
 
           <p className="text-portal-muted text-xs text-center mt-4">
-            Ao continuar, um registro do seu consentimento sera salvo com data, hora e IP para fins de auditoria.
+            Ao continuar, um registro do seu consentimento será salvo com data, hora e IP para fins de auditoria.
           </p>
         </div>
       </div>

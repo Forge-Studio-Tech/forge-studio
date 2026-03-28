@@ -15,13 +15,13 @@ export default function ForcePasswordChange() {
     setError('')
 
     if (form.new_password.length < 8) {
-      return setError('A nova senha deve ter no minimo 8 caracteres')
+      return setError('A nova senha deve ter no mínimo 8 caracteres')
     }
     if (form.new_password === form.current_password) {
-      return setError('A nova senha deve ser diferente da senha temporaria')
+      return setError('A nova senha deve ser diferente da senha temporária')
     }
     if (form.new_password !== form.confirm_password) {
-      return setError('As senhas nao conferem')
+      return setError('As senhas não conferem')
     }
 
     setSaving(true)
@@ -56,12 +56,12 @@ export default function ForcePasswordChange() {
         <div className="bg-forge-surface border border-forge-border rounded-xl p-8">
           <h1 className="text-forge-text text-xl font-bold mb-1">Alterar Senha</h1>
           <p className="text-forge-muted text-sm mb-6">
-            Voce esta usando uma senha temporaria. Por seguranca, escolha uma nova senha para continuar.
+            Você está usando uma senha temporária. Por segurança, escolha uma nova senha para continuar.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-forge-text mb-1.5">Senha temporaria</label>
+              <label className="block text-sm font-medium text-forge-text mb-1.5">Senha temporária</label>
               <input
                 type="password"
                 value={form.current_password}
@@ -80,7 +80,7 @@ export default function ForcePasswordChange() {
                 required
                 minLength={8}
                 className={inputClass}
-                placeholder="Minimo 8 caracteres"
+                placeholder="Mínimo 8 caracteres"
               />
             </div>
             <div>

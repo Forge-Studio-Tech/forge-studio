@@ -67,7 +67,7 @@ export default function Billing() {
         <div>
           <h1 className="text-2xl font-bold text-portal-text">Financeiro</h1>
           <p className="text-portal-muted text-sm mt-1">
-            {isAdmin ? 'Controle de cobrancas, vendas e despesas' : 'Seus pagamentos e plano contratado'}
+            {isAdmin ? 'Controle de cobranças, vendas e despesas' : 'Seus pagamentos e plano contratado'}
           </p>
         </div>
         {isAdmin && (
@@ -230,11 +230,11 @@ function PaymentsTab({ payments, loading, isAdmin, refetch, onEdit }) {
         <thead>
           <tr className="border-b border-portal-border">
             {isAdmin && <th className={`${thClass} hidden md:table-cell`}>Cliente</th>}
-            <th className={thClass}>Referencia</th>
+            <th className={thClass}>Referência</th>
             <th className={thClass}>Valor</th>
             <th className={thClass}>Status</th>
             <th className={`${thClass} hidden md:table-cell`}>Vencimento</th>
-            {isAdmin && <th className={thClass}>Acao</th>}
+            {isAdmin && <th className={thClass}>Ação</th>}
           </tr>
         </thead>
         <tbody className="divide-y divide-portal-border">
@@ -312,9 +312,9 @@ function SalesTab({ sales, loading, refetch, onEdit }) {
             <th className={`${thClass} hidden md:table-cell`}>Cliente</th>
             <th className={`${thClass} hidden md:table-cell`}>Projeto</th>
             <th className={thClass}>Valor</th>
-            <th className={`${thClass} hidden md:table-cell`}>Comissao</th>
+            <th className={`${thClass} hidden md:table-cell`}>Comissão</th>
             <th className={`${thClass} hidden md:table-cell`}>Data</th>
-            <th className={thClass}>Acao</th>
+            <th className={thClass}>Ação</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-portal-border">
@@ -344,7 +344,7 @@ function SalesTab({ sales, loading, refetch, onEdit }) {
                   <div className="flex items-center gap-1">
                     {Number(s.commission_amount) > 0 && !s.commission_paid && (
                       <ActionBtn
-                        title="Marcar Comissao Paga"
+                        title="Marcar Comissão Paga"
                         color="text-success"
                         hoverColor="hover:text-success/80"
                         onClick={async () => {
@@ -399,7 +399,7 @@ function ExpensesTab({ expenses, loading, refetch, onEdit }) {
             <th className={`${thClass} hidden md:table-cell`}>Cliente</th>
             <th className={thClass}>Valor</th>
             <th className={`${thClass} hidden md:table-cell`}>Data</th>
-            <th className={thClass}>Acao</th>
+            <th className={thClass}>Ação</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-portal-border">
@@ -526,7 +526,7 @@ function PaymentModal({ payment, clients, onClose, onSaved }) {
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-portal-text mb-1">Observacoes</label>
+          <label className="block text-sm font-medium text-portal-text mb-1">Observações</label>
           <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className={`${inputClass} resize-none`} />
         </div>
         {error && <p className="text-danger text-sm">{error}</p>}
@@ -642,7 +642,7 @@ function SaleModal({ sale, clients, projects, onClose, onSaved }) {
 
         {/* Comissao */}
         <div className="border border-portal-border rounded-lg p-4">
-          <p className="text-sm font-medium text-portal-text mb-3">Comissao</p>
+          <p className="text-sm font-medium text-portal-text mb-3">Comissão</p>
           {selectedClient?.has_commission && (
             <p className="text-xs text-portal-muted mb-3">
               Preenchido automaticamente a partir do cadastro de {selectedClient.company_name || selectedClient.user_name}
@@ -652,7 +652,7 @@ function SaleModal({ sale, clients, projects, onClose, onSaved }) {
             <div>
               <label className="block text-xs text-portal-muted mb-1">Tipo</label>
               <select value={form.commission_type} onChange={(e) => setForm({ ...form, commission_type: e.target.value })} className={`${inputClass} h-[38px]`}>
-                <option value="">Sem comissao</option>
+                <option value="">Sem comissão</option>
                 <option value="percent">Percentual (%)</option>
                 <option value="fixed">Valor Fixo (R$)</option>
               </select>
@@ -683,13 +683,13 @@ function SaleModal({ sale, clients, projects, onClose, onSaved }) {
                 onChange={(e) => setForm({ ...form, commission_paid: e.target.checked })}
                 className="rounded border-portal-border text-copper focus:ring-copper"
               />
-              <span className="text-sm text-portal-text">Comissao paga</span>
+              <span className="text-sm text-portal-text">Comissão paga</span>
             </label>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-portal-text mb-1">Observacoes</label>
+          <label className="block text-sm font-medium text-portal-text mb-1">Observações</label>
           <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className={`${inputClass} resize-none`} />
         </div>
         {error && <p className="text-danger text-sm">{error}</p>}
@@ -771,7 +771,7 @@ function ExpenseModal({ expense, clients, onClose, onSaved }) {
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-portal-text mb-1">Observacoes</label>
+          <label className="block text-sm font-medium text-portal-text mb-1">Observações</label>
           <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className={`${inputClass} resize-none`} />
         </div>
         {error && <p className="text-danger text-sm">{error}</p>}

@@ -5,7 +5,7 @@ const ACTION_LABELS = {
   consent_granted: 'Consentimento aceito',
   consent_revoked: 'Consentimento revogado',
   data_exported: 'Dados exportados',
-  data_deleted: 'Dados excluidos',
+  data_deleted: 'Dados excluídos',
 }
 
 const ROLE_LABELS = { admin: 'Admin', client: 'Cliente' }
@@ -85,7 +85,7 @@ export default function AdminLgpd() {
 
       {/* Cards resumo */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <SummaryCard label="Total Usuarios" value={totalUsers} />
+        <SummaryCard label="Total Usuários" value={totalUsers} />
         <SummaryCard label="Consentimento OK" value={consented} color="text-success" />
         <SummaryCard label="Pendente" value={pending} color={pending > 0 ? 'text-warning' : 'text-portal-muted'} />
         <SummaryCard label="Marketing Aceito" value={withMarketing} color="text-copper" />
@@ -146,7 +146,7 @@ function ConsentsTable({ records, loading }) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-portal-border">
-            <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Usuario</th>
+            <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Usuário</th>
             <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden sm:table-cell">Tipo</th>
             <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">Email</th>
             <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Status</th>
@@ -162,7 +162,7 @@ function ConsentsTable({ records, loading }) {
           {records.length === 0 ? (
             <tr>
               <td colSpan={10} className="px-6 py-8 text-center text-portal-muted text-sm">
-                Nenhum usuario cadastrado.
+                Nenhum usuário cadastrado.
               </td>
             </tr>
           ) : (
@@ -238,7 +238,7 @@ function ConsentBadge({ value, optional }) {
   if (value) {
     return <span className="text-success text-xs font-medium">Sim</span>
   }
-  return <span className={`${optional ? 'text-portal-muted' : 'text-danger'} text-xs font-medium`}>Nao</span>
+  return <span className={`${optional ? 'text-portal-muted' : 'text-danger'} text-xs font-medium`}>Não</span>
 }
 
 function AuditTable({ audit, loading }) {
@@ -256,8 +256,8 @@ function AuditTable({ audit, loading }) {
         <thead>
           <tr className="border-b border-portal-border">
             <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Data</th>
-            <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Usuario</th>
-            <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Acao</th>
+            <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Usuário</th>
+            <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Ação</th>
             <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">Detalhes</th>
             <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">IP</th>
           </tr>

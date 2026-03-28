@@ -143,9 +143,9 @@ const STATUS_LABELS = {
   briefing: 'Briefing',
   design: 'Design',
   development: 'Desenvolvimento',
-  review: 'Revisao',
+  review: 'Revisão',
   published: 'Publicado',
-  maintenance: 'Manutencao',
+  maintenance: 'Manutenção',
 }
 
 const STATUS_COLORS = {

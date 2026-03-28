@@ -8,7 +8,7 @@ const STATUS_LABELS = { active: 'Ativo', inactive: 'Inativo', prospect: 'Prospec
 const DOMAIN_LABELS = { forge: 'Forge Studio', client: 'Cliente', third_party: 'Terceiro' }
 const PROJECT_STATUS = {
   briefing: 'Briefing', design: 'Design', development: 'Desenvolvimento',
-  review: 'Revisao', published: 'Publicado', maintenance: 'Manutencao', archived: 'Arquivado',
+  review: 'Revisão', published: 'Publicado', maintenance: 'Manutenção', archived: 'Arquivado',
 }
 const PAYMENT_STATUS = { pending: 'Pendente', paid: 'Pago', overdue: 'Atrasado', cancelled: 'Cancelado' }
 
@@ -111,7 +111,7 @@ export default function ClientDetail() {
             {client.referred_by && <Detail label="Indicado por" value={client.referred_by} />}
             {client.has_commission && (
               <Detail
-                label="Comissao"
+                label="Comissão"
                 value={
                   client.commission_type === 'percent'
                     ? `${Number(client.commission_value)}% sobre venda do projeto`
@@ -124,14 +124,14 @@ export default function ClientDetail() {
 
         {/* Dominio e endereco */}
         <section className="bg-portal-surface border border-portal-border rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-portal-text mb-4">Dominio e Endereco</h2>
+          <h2 className="text-lg font-semibold text-portal-text mb-4">Domínio e Endereço</h2>
           <dl className="space-y-3">
             {client.domain_ownership && <Detail label="Titularidade" value={DOMAIN_LABELS[client.domain_ownership] || client.domain_ownership} />}
-            {client.domain_renewal_date && <Detail label="Renovacao" value={new Date(client.domain_renewal_date).toLocaleDateString('pt-BR')} />}
+            {client.domain_renewal_date && <Detail label="Renovação" value={new Date(client.domain_renewal_date).toLocaleDateString('pt-BR')} />}
             {client.billing_day && <Detail label="Dia de Vencimento" value={client.billing_day} />}
             {(client.street || client.city) && (
               <Detail
-                label="Endereco"
+                label="Endereço"
                 value={[
                   [client.street, client.address_number].filter(Boolean).join(', '),
                   client.complement,
@@ -143,7 +143,7 @@ export default function ClientDetail() {
           </dl>
           {client.notes && (
             <div className="mt-4 pt-4 border-t border-portal-border">
-              <p className="text-xs font-medium text-portal-muted uppercase tracking-wider mb-1">Observacoes</p>
+              <p className="text-xs font-medium text-portal-muted uppercase tracking-wider mb-1">Observações</p>
               <p className="text-portal-text text-sm whitespace-pre-wrap">{client.notes}</p>
             </div>
           )}
@@ -273,7 +273,7 @@ export default function ClientDetail() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-portal-border">
-                  <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Referencia</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Referência</th>
                   <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Valor</th>
                   <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Vencimento</th>
                   <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Status</th>

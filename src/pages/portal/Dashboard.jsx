@@ -39,7 +39,7 @@ function ClientDashboard({ user }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <StatCard label="Projetos Ativos" value={loadingProjects ? '...' : String(projects.length)} />
         <StatCard
-          label="Proximo Pagamento"
+          label="Próximo Pagamento"
           value={loadingPayments ? '...' : nextPayment
             ? `R$ ${Number(nextPayment.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
             : 'Nenhum'}
@@ -107,7 +107,7 @@ function ClientDashboard({ user }) {
 
 const STATUS_LABELS = {
   briefing: 'Briefing', design: 'Design', development: 'Desenvolvimento',
-  review: 'Revisao', published: 'Publicado', maintenance: 'Manutencao',
+  review: 'Revisão', published: 'Publicado', maintenance: 'Manutenção',
 }
 const STATUS_COLORS = {
   briefing: 'bg-portal-border/50 text-portal-muted',

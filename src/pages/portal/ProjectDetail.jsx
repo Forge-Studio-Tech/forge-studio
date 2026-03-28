@@ -6,7 +6,7 @@ import { useApi, apiFetch } from '../../hooks/useApi.js'
 const STEPS = ['briefing', 'design', 'development', 'review', 'published']
 const STEP_LABELS = {
   briefing: 'Briefing', design: 'Design', development: 'Desenvolvimento',
-  review: 'Revisao', published: 'Publicado',
+  review: 'Revisão', published: 'Publicado',
 }
 
 export default function ProjectDetail() {
@@ -110,7 +110,7 @@ export default function ProjectDetail() {
         <section className="bg-portal-surface border border-portal-border rounded-xl p-6">
           <h2 className="text-lg font-semibold text-portal-text mb-4">Detalhes</h2>
           <dl className="space-y-3">
-            {project.domain && <Detail label="Dominio" value={project.domain} />}
+            {project.domain && <Detail label="Domínio" value={project.domain} />}
             {project.preview_url && (
               <Detail label="Preview" value={
                 <a href={project.preview_url} target="_blank" rel="noopener noreferrer" className="text-copper hover:text-copper-dark transition-colors">
@@ -131,7 +131,7 @@ export default function ProjectDetail() {
         </section>
 
         <section className="bg-portal-surface border border-portal-border rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-portal-text mb-4">Informacoes</h2>
+          <h2 className="text-lg font-semibold text-portal-text mb-4">Informações</h2>
           <dl className="space-y-3">
             <Detail label="Tipo" value={project.type?.replace('_', ' ')} />
             <Detail label="Status" value={STEP_LABELS[project.status] || project.status} />

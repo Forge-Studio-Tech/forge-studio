@@ -69,14 +69,14 @@ export default function AdminClients() {
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Projetos</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">MRR</th>
                 <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">LGPD</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Acao</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Ação</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-portal-border">
               {clients.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-8 text-center text-portal-muted text-sm">
-                    Nenhum cliente cadastrado. Clique em "Novo Cliente" para comecar.
+                    Nenhum cliente cadastrado. Clique em "Novo Cliente" para começar.
                   </td>
                 </tr>
               ) : (
@@ -263,13 +263,13 @@ function ClientModal({ client, onClose, onSaved }) {
         <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* === Dados Basicos === */}
-          <SectionTitle>Dados Basicos</SectionTitle>
+          <SectionTitle>Dados Básicos</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Nome *" value={form.name} onChange={(v) => set('name', v)} required />
             <Field label="Email *" type="email" value={form.email} onChange={(v) => set('email', v)} required />
           </div>
           {!isEdit && (
-            <p className="text-portal-muted text-xs">A senha sera gerada automaticamente e enviada por email ao cliente.</p>
+            <p className="text-portal-muted text-xs">A senha será gerada automaticamente e enviada por email ao cliente.</p>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Empresa" value={form.company_name} onChange={(v) => set('company_name', v)} />
@@ -278,22 +278,22 @@ function ClientModal({ client, onClose, onSaved }) {
           <Field label="CPF/CNPJ" value={form.cnpj_cpf} onChange={(v) => set('cnpj_cpf', v)} />
 
           {/* === CRM === */}
-          <SectionTitle>Informacoes Comerciais</SectionTitle>
+          <SectionTitle>Informações Comerciais</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectField label="Status" value={form.status} onChange={(v) => set('status', v)} options={STATUS_OPTIONS} />
             <ComboField label="Segmento" value={form.segment} onChange={(v) => set('segment', v)} placeholder="Ex: Restaurante, Advocacia..." />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <SelectField label="Titularidade do Dominio" value={form.domain_ownership} onChange={(v) => set('domain_ownership', v)} options={DOMAIN_OWNERSHIP_OPTIONS} allowEmpty />
+            <SelectField label="Titularidade do Domínio" value={form.domain_ownership} onChange={(v) => set('domain_ownership', v)} options={DOMAIN_OWNERSHIP_OPTIONS} allowEmpty />
             <Field label="Dia de Vencimento" type="number" value={form.billing_day} onChange={(v) => set('billing_day', v)} placeholder="1-31" min={1} max={31} />
-            <ComboField label="Canal de Origem" value={form.acquisition_channel} onChange={(v) => set('acquisition_channel', v)} placeholder="Ex: Indicacao, Google..." />
+            <ComboField label="Canal de Origem" value={form.acquisition_channel} onChange={(v) => set('acquisition_channel', v)} placeholder="Ex: Indicação, Google..." />
           </div>
-          <Field label="Data de Renovacao do Dominio" type="date" value={form.domain_renewal_date} onChange={(v) => set('domain_renewal_date', v)} />
+          <Field label="Data de Renovação do Domínio" type="date" value={form.domain_renewal_date} onChange={(v) => set('domain_renewal_date', v)} />
 
           {/* === Indicacao e Comissao === */}
-          {form.acquisition_channel?.toLowerCase() === 'indicacao' && (
+          {form.acquisition_channel?.toLowerCase() === 'indicação' && (
             <>
-              <SectionTitle>Indicacao e Comissao</SectionTitle>
+              <SectionTitle>Indicação e Comissão</SectionTitle>
               <Field label="Indicado por" value={form.referred_by} onChange={(v) => set('referred_by', v)} placeholder="Nome de quem indicou" />
               <div className="flex items-center gap-2 mt-1">
                 <input
@@ -303,12 +303,12 @@ function ClientModal({ client, onClose, onSaved }) {
                   onChange={(e) => set('has_commission', e.target.checked)}
                   className="rounded border-portal-border"
                 />
-                <label htmlFor="has_commission" className="text-sm text-portal-text">Tem comissao</label>
+                <label htmlFor="has_commission" className="text-sm text-portal-text">Tem comissão</label>
               </div>
               {form.has_commission && (
                 <div className="grid grid-cols-2 gap-4">
                   <SelectField
-                    label="Tipo de Comissao"
+                    label="Tipo de Comissão"
                     value={form.commission_type}
                     onChange={(v) => set('commission_type', v)}
                     options={[
@@ -317,7 +317,7 @@ function ClientModal({ client, onClose, onSaved }) {
                     ]}
                   />
                   <Field
-                    label={form.commission_type === 'percent' ? 'Comissao (%)' : 'Comissao (R$)'}
+                    label={form.commission_type === 'percent' ? 'Comissão (%)' : 'Comissão (R$)'}
                     type="number"
                     step="0.01"
                     value={form.commission_value}
@@ -326,12 +326,12 @@ function ClientModal({ client, onClose, onSaved }) {
                   />
                 </div>
               )}
-              <p className="text-portal-muted text-xs">Comissao aplicada apenas sobre o valor da venda do projeto, nao sobre mensalidades.</p>
+              <p className="text-portal-muted text-xs">Comissão aplicada apenas sobre o valor da venda do projeto, não sobre mensalidades.</p>
             </>
           )}
 
           {/* === Endereco === */}
-          <SectionTitle>Endereco</SectionTitle>
+          <SectionTitle>Endereço</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <Field
@@ -354,7 +354,7 @@ function ClientModal({ client, onClose, onSaved }) {
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Field label="Numero" value={form.address_number} onChange={(v) => set('address_number', v)} />
+            <Field label="Número" value={form.address_number} onChange={(v) => set('address_number', v)} />
             <Field label="Complemento" value={form.complement} onChange={(v) => set('complement', v)} />
             <Field label="Cidade" value={form.city} onChange={(v) => set('city', v)} />
             <SelectField label="Estado" value={form.state} onChange={(v) => set('state', v)} options={STATES.map((s) => ({ value: s, label: s }))} allowEmpty />
@@ -363,7 +363,7 @@ function ClientModal({ client, onClose, onSaved }) {
           {/* === Seguranca (somente edicao) === */}
           {isEdit && (
             <>
-              <SectionTitle>Seguranca</SectionTitle>
+              <SectionTitle>Segurança</SectionTitle>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -391,7 +391,7 @@ function ClientModal({ client, onClose, onSaved }) {
           )}
 
           {/* === Observacoes === */}
-          <SectionTitle>Observacoes</SectionTitle>
+          <SectionTitle>Observações</SectionTitle>
           <div>
             <textarea
               value={form.notes || ''}
@@ -492,14 +492,14 @@ function ComboField({ label, value, onChange, placeholder }) {
             <option value="Imobiliaria" />
             <option value="Agencia" />
             <option value="Consultoria" />
-            <option value="Industria" />
+            <option value="Indústria" />
             <option value="Servicos" />
             <option value="Tecnologia" />
           </>
         )}
         {label === 'Canal de Origem' && (
           <>
-            <option value="Indicacao" />
+            <option value="Indicação" />
             <option value="Google" />
             <option value="Instagram" />
             <option value="WhatsApp" />

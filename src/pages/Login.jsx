@@ -88,7 +88,7 @@ export default function Login() {
           </form>
 
           <p className="text-forge-muted text-xs text-center mt-6">
-            Utilizamos cookies de sessao para manter voce conectado.
+            Utilizamos cookies de sessão para manter você conectado.
           </p>
         </div>
 

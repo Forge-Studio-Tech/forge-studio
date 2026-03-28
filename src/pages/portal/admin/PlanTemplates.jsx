@@ -4,14 +4,14 @@ import { EditIcon, DeactivateIcon, ActionBtn } from '../../../components/portal/
 
 const TYPE_OPTIONS = [
   { value: 'hosting', label: 'Hosting' },
-  { value: 'maintenance', label: 'Manutencao' },
+  { value: 'maintenance', label: 'Manutenção' },
   { value: 'full', label: 'Completo' },
 ]
 
 const TIER_OPTIONS = [
   { value: '', label: 'Nenhum' },
-  { value: 'basic', label: 'Basico' },
-  { value: 'standard', label: 'Padrao' },
+  { value: 'basic', label: 'Básico' },
+  { value: 'standard', label: 'Padrão' },
   { value: 'premium', label: 'Premium' },
 ]
 
@@ -36,7 +36,7 @@ export default function PlanTemplates() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-portal-text">Tipos de Plano</h1>
-          <p className="text-portal-muted text-sm mt-1">Gerencie os modelos de plano disponiveis para contratacao</p>
+          <p className="text-portal-muted text-sm mt-1">Gerencie os modelos de plano disponíveis para contratação</p>
         </div>
         <button
           onClick={() => { setEditing(null); setShowModal(true) }}
@@ -122,7 +122,7 @@ export default function PlanTemplates() {
 
           {active.length === 0 && (
             <p className="text-portal-muted text-sm text-center py-8 bg-portal-surface border border-portal-border rounded-xl mb-8">
-              Nenhum tipo de plano ativo. Crie um novo tipo para comecar.
+              Nenhum tipo de plano ativo. Crie um novo tipo para começar.
             </p>
           )}
 
@@ -266,12 +266,12 @@ function TemplateModal({ template, onClose, onSaved }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-portal-text mb-1">Descricao</label>
+            <label className="block text-sm font-medium text-portal-text mb-1">Descrição</label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
-              placeholder="Descreva o que esta incluso neste plano..."
+              placeholder="Descreva o que está incluso neste plano..."
               className={`${inputClass} resize-none`}
             />
           </div>

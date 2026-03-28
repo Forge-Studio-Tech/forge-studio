@@ -7,7 +7,7 @@ export default function Settings() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-portal-text mb-1">Configuracoes</h1>
+      <h1 className="text-2xl font-bold text-portal-text mb-1">Configurações</h1>
       <p className="text-portal-muted text-sm mb-8">Gerencie sua conta</p>
 
       <div className="space-y-6 max-w-xl">
@@ -43,7 +43,7 @@ export default function Settings() {
               Exportar meus dados
             </button>
             <button className="text-danger hover:text-danger/80 text-sm font-medium transition-colors block">
-              Solicitar exclusao da conta
+              Solicitar exclusão da conta
             </button>
           </div>
         </section>
@@ -342,11 +342,11 @@ function SecuritySection() {
   async function handleChangePassword(e) {
     e.preventDefault()
     if (newPw !== confirmPw) {
-      setError('As senhas nao coincidem')
+      setError('As senhas não coincidem')
       return
     }
     if (newPw.length < 8) {
-      setError('A nova senha deve ter no minimo 8 caracteres')
+      setError('A nova senha deve ter no mínimo 8 caracteres')
       return
     }
     setSaving(true)
@@ -370,7 +370,7 @@ function SecuritySection() {
   }
 
   async function handleResetPassword() {
-    if (!confirm('Uma nova senha sera gerada e enviada para seu email. Deseja continuar?')) return
+    if (!confirm('Uma nova senha será gerada e enviada para seu email. Deseja continuar?')) return
     setResetting(true)
     setError('')
     setSuccess('')
@@ -388,7 +388,7 @@ function SecuritySection() {
 
   return (
     <section className="bg-portal-surface border border-portal-border rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-portal-text mb-4">Seguranca</h2>
+      <h2 className="text-lg font-semibold text-portal-text mb-4">Segurança</h2>
 
       {success && (
         <div className="bg-success/10 border border-success/30 rounded-lg p-3 mb-4">
