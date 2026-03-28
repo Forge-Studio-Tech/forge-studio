@@ -14,6 +14,8 @@ import AdminPlans from './pages/portal/admin/Plans.jsx'
 import AdminLgpd from './pages/portal/admin/Lgpd.jsx'
 import PlanTemplates from './pages/portal/admin/PlanTemplates.jsx'
 import DashboardMRR from './pages/portal/admin/DashboardMRR.jsx'
+import Monitoring from './pages/portal/admin/Monitoring.jsx'
+import ClientMonitoring from './pages/portal/Monitoring.jsx'
 import Tickets from './pages/portal/Tickets.jsx'
 import TicketDetail from './pages/portal/TicketDetail.jsx'
 import LgpdConsent from './pages/portal/LgpdConsent.jsx'
@@ -66,6 +68,7 @@ export default function AppRouter() {
           <Route path="billing" element={<Billing />} />
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/:id" element={<TicketDetail />} />
+          <Route path="monitoring" element={<ClientMonitoring />} />
           <Route path="settings" element={<Settings />} />
 
           {/* Admin only */}
@@ -75,6 +78,7 @@ export default function AppRouter() {
           <Route path="admin/plan-templates" element={<PlanTemplates />} />
           <Route path="admin/lgpd" element={<AdminLgpd />} />
           <Route path="admin/dashboard-mrr" element={<DashboardMRR />} />
+          <Route path="admin/monitoring" element={<Monitoring />} />
         </Route>
       </Routes>
     </AuthProvider>

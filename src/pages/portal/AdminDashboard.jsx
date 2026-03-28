@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useApi } from '../../hooks/useApi.js'
 import StatCard from '../../components/portal/StatCard.jsx'
 
@@ -6,6 +6,7 @@ export default function AdminDashboard() {
   const { data: clientsData } = useApi('/api/clients')
   const { data: projectsData } = useApi('/api/projects')
   const { data: summaryData } = useApi('/api/payments/summary')
+  const { data: monitorData } = useApi('/api/monitoring')
 
   const navigate = useNavigate()
   const clients = clientsData?.clients || []
@@ -13,6 +14,11 @@ export default function AdminDashboard() {
   const summary = summaryData?.summary || {}
 
   const activeProjects = projects.filter((p) => p.status !== 'maintenance')
+
+  const monitorSites = monitorData?.sites || []
+  const sitesOnline = monitorSites.filter((s) => s.status === 'online').length
+  const sitesOffline = monitorSites.filter((s) => s.status === 'offline').length
+  const hasOffline = sitesOffline > 0
 
   return (
     <div>
@@ -41,6 +47,31 @@ export default function AdminDashboard() {
             {summary.overdue_count} pagamento(s) atrasado(s) — total R$ {Number(summary.overdue_total).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </p>
         </div>
+      )}
+
+      {/* Card monitoramento */}
+      {monitorSites.length > 0 && (
+        <Link
+          to="/portal/admin/monitoring"
+          className={`block rounded-xl border p-4 mb-8 transition-colors hover:border-copper/40 ${
+            hasOffline
+              ? 'bg-danger/5 border-danger/30'
+              : 'bg-success/5 border-success/30'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className={`w-3 h-3 rounded-full ${hasOffline ? 'bg-danger animate-pulse' : 'bg-success'}`} />
+              <span className="text-portal-text text-sm font-medium">
+                {hasOffline
+                  ? `${sitesOffline} site(s) offline, ${sitesOnline} online`
+                  : `${sitesOnline} site(s) online`
+                }
+              </span>
+            </div>
+            <span className="text-portal-muted text-xs">Ver detalhes →</span>
+          </div>
+        </Link>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

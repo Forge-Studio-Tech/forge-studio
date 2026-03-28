@@ -5,9 +5,9 @@ import AdminDashboard from './AdminDashboard.jsx'
 import StatCard from '../../components/portal/StatCard.jsx'
 
 export default function Dashboard() {
-  const { user } = useAuth()
+  const { user, impersonating } = useAuth()
 
-  if (user?.role === 'admin') {
+  if (user?.role === 'admin' && !impersonating) {
     return <AdminDashboard />
   }
 
@@ -17,11 +17,15 @@ export default function Dashboard() {
 function ClientDashboard({ user }) {
   const { data: projectsData, loading: loadingProjects } = useApi('/api/projects')
   const { data: paymentsData, loading: loadingPayments } = useApi('/api/payments')
+  const { data: monitorData } = useApi('/api/monitoring')
 
   const projects = projectsData?.projects || []
   const payments = paymentsData?.payments || []
   const pendingPayments = payments.filter((p) => p.status === 'pending')
   const nextPayment = pendingPayments.sort((a, b) => new Date(a.due_date) - new Date(b.due_date))[0]
+
+  const monitorSites = monitorData?.sites || []
+  const firstSite = monitorSites[0]
 
   return (
     <div>
@@ -39,9 +43,37 @@ function ClientDashboard({ user }) {
           value={loadingPayments ? '...' : nextPayment
             ? `R$ ${Number(nextPayment.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
             : 'Nenhum'}
+          subtitle={nextPayment?.due_date
+            ? `Vencimento: ${new Date(nextPayment.due_date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })}`
+            : null}
         />
         <StatCard label="Pagamentos Pendentes" value={loadingPayments ? '...' : String(pendingPayments.length)} />
       </div>
+
+      {/* Monitoramento */}
+      {firstSite && (
+        <Link
+          to="/portal/monitoring"
+          className={`block rounded-xl border p-4 mb-8 transition-colors hover:border-copper/40 ${
+            firstSite.status === 'offline'
+              ? 'bg-danger/5 border-danger/30'
+              : 'bg-success/5 border-success/30'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className={`w-3 h-3 rounded-full ${firstSite.status === 'offline' ? 'bg-danger animate-pulse' : 'bg-success'}`} />
+              <span className="text-portal-text text-sm font-medium">
+                {firstSite.status === 'offline'
+                  ? 'Seu site está fora do ar'
+                  : `Seu site está online${firstSite.response_time_ms ? ` — ${firstSite.response_time_ms}ms` : ''}`
+                }
+              </span>
+            </div>
+            <span className="text-portal-muted text-xs">Ver detalhes →</span>
+          </div>
+        </Link>
+      )}
 
       <section>
         <h2 className="text-lg font-semibold text-portal-text mb-4">Meus Projetos</h2>
