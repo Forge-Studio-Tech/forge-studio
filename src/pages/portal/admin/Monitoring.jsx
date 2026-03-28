@@ -190,12 +190,13 @@ function ResponseChart({ history }) {
     <div>
       <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-2">Tempo de Resposta (24h)</p>
       <div className="bg-portal-bg rounded-lg p-3">
-        <svg viewBox={`0 0 ${sampled.length} ${chartHeight}`} className="w-full h-20" preserveAspectRatio="none">
+        <svg viewBox={`0 0 600 ${chartHeight}`} className="w-full h-20" preserveAspectRatio="none">
           <polyline
             fill="none"
             stroke="#D5851E"
             strokeWidth="1.5"
-            points={sampled.map((h, i) => `${i},${chartHeight - (h.response_time_ms / maxMs) * (chartHeight - 10)}`).join(' ')}
+            vectorEffect="non-scaling-stroke"
+            points={sampled.map((h, i) => `${(i / (sampled.length - 1)) * 600},${chartHeight - 4 - (h.response_time_ms / maxMs) * (chartHeight - 8)}`).join(' ')}
           />
         </svg>
         <div className="flex justify-between text-[10px] text-portal-muted mt-1">

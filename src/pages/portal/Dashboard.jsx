@@ -157,17 +157,20 @@ function MonitoringCard({ site }) {
         <div className="px-5 pb-2">
           <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-1.5">Tempo de Resposta (24h)</p>
           <div className="bg-portal-bg rounded-lg p-2">
-            <svg viewBox={`0 0 ${Math.min(history.length, 100)} 50`} className="w-full h-12" preserveAspectRatio="none">
+            <svg viewBox="0 0 600 60" className="w-full h-12" preserveAspectRatio="none">
               {(() => {
                 const step = Math.max(1, Math.floor(history.length / 100))
                 const sampled = history.filter((_, i) => i % step === 0)
                 const maxMs = Math.max(...sampled.map((h) => h.response_time_ms))
+                const w = 600
+                const h = 60
                 return (
                   <polyline
                     fill="none"
                     stroke="#D5851E"
                     strokeWidth="1.5"
-                    points={sampled.map((h, i) => `${i},${48 - (h.response_time_ms / maxMs) * 44}`).join(' ')}
+                    vectorEffect="non-scaling-stroke"
+                    points={sampled.map((pt, i) => `${(i / (sampled.length - 1)) * w},${h - 4 - (pt.response_time_ms / maxMs) * (h - 8)}`).join(' ')}
                   />
                 )
               })()}

@@ -130,17 +130,20 @@ function ClientSiteDetail({ projectId }) {
         <div>
           <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-2">Tempo de Resposta (24h)</p>
           <div className="bg-portal-bg rounded-lg p-3">
-            <svg viewBox={`0 0 ${Math.min(history.length, 100)} 80`} className="w-full h-20" preserveAspectRatio="none">
+            <svg viewBox="0 0 600 80" className="w-full h-20" preserveAspectRatio="none">
               {(() => {
                 const step = Math.max(1, Math.floor(history.length / 100))
                 const sampled = history.filter((_, i) => i % step === 0)
                 const maxMs = Math.max(...sampled.map((h) => h.response_time_ms))
+                const w = 600
+                const h = 80
                 return (
                   <polyline
                     fill="none"
                     stroke="#D5851E"
                     strokeWidth="1.5"
-                    points={sampled.map((h, i) => `${i},${80 - (h.response_time_ms / maxMs) * 70}`).join(' ')}
+                    vectorEffect="non-scaling-stroke"
+                    points={sampled.map((pt, i) => `${(i / (sampled.length - 1)) * w},${h - 4 - (pt.response_time_ms / maxMs) * (h - 8)}`).join(' ')}
                   />
                 )
               })()}
