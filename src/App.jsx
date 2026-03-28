@@ -8,6 +8,7 @@ import CTA from './components/CTA'
 import Footer from './components/Footer'
 import WhatsAppButton from './components/WhatsAppButton'
 import FloatingLogo from './components/FloatingLogo'
+import ForgeAnalytics from './components/ForgeAnalytics'
 
 export default function App() {
   // Refs para os dois "âncoras" do logo — placeholder no Hero e logo no Navbar
@@ -40,6 +41,7 @@ export default function App() {
       <WhatsAppButton />
       {/* Logo flutuante — anima entre Hero e Navbar no mobile */}
       <FloatingLogo heroLogoRef={heroLogoRef} navLogoRef={navLogoRef} />
+      <ForgeAnalytics measurementId="G-7W28TSS4V4" sections={['hero', 'portfolio', 'sobre', 'faq', 'cta']} />
     </div>
   )
 }

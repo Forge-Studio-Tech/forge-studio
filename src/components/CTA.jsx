@@ -2,7 +2,7 @@ const WA_LINK = 'https://wa.me/5514996936966?text=Ol%C3%A1%2C%20vim%20pelo%20sit
 
 export default function CTA() {
   return (
-    <section className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800">
+    <section id="cta" className="px-6 md:px-12 lg:px-20 py-24 border-t border-stone-800">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-4xl md:text-6xl font-black text-stone-100 leading-tight mb-6">
           Pronto para ter um<br />
