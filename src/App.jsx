@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Portfolio from './components/Portfolio'
 import About from './components/About'
+import Services from './components/Services'
 import FAQ from './components/FAQ'
 import CTA from './components/CTA'
 import Footer from './components/Footer'
@@ -35,13 +36,14 @@ export default function App() {
       <Hero logoRef={heroLogoRef} />
       <Portfolio />
       <About />
+      <Services />
       <FAQ />
       <CTA />
       <Footer />
       <WhatsAppButton />
       {/* Logo flutuante — anima entre Hero e Navbar no mobile */}
       <FloatingLogo heroLogoRef={heroLogoRef} navLogoRef={navLogoRef} />
-      <ForgeAnalytics measurementId="G-7W28TSS4V4" sections={['hero', 'portfolio', 'sobre', 'faq', 'cta']} />
+      <ForgeAnalytics measurementId="G-7W28TSS4V4" sections={['hero', 'portfolio', 'sobre', 'servicos', 'faq', 'cta']} />
     </div>
   )
 }

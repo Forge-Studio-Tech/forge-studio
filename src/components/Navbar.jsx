@@ -31,6 +31,7 @@ export default function Navbar({ logoRef, heroVisible }) {
       <div className="hidden md:flex items-center gap-8 text-sm text-stone-400">
         <a href="#portfolio" className="hover:text-copper transition-colors">Portfólio</a>
         <a href="#sobre"     className="hover:text-copper transition-colors">Sobre</a>
+        <a href="#servicos"  className="hover:text-copper transition-colors">Serviços</a>
         <a href="#faq"       className="hover:text-copper transition-colors">FAQ</a>
         <Link
           to="/login"
@@ -52,6 +53,7 @@ export default function Navbar({ logoRef, heroVisible }) {
       <div className="flex md:hidden items-center gap-5 text-sm font-medium text-stone-400">
         <a href="#portfolio" className="hover:text-copper transition-colors">Portfólio</a>
         <a href="#sobre"     className="hover:text-copper transition-colors">Sobre</a>
+        <a href="#servicos"  className="hover:text-copper transition-colors">Serviços</a>
         <a href="#faq"       className="hover:text-copper transition-colors">FAQ</a>
       </div>
 
