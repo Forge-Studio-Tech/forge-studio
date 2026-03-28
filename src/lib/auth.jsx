@@ -32,6 +32,8 @@ const SESSION_KEY = 'forge_dev_session'
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [impersonating, setImpersonating] = useState(false)
+  const [adminName, setAdminName] = useState(null)
 
   // Verifica sessao ao carregar
   useEffect(() => {
@@ -59,11 +61,17 @@ export function AuthProvider({ children }) {
       if (res.ok) {
         const data = await res.json()
         setUser(data.user)
+        setImpersonating(!!data.impersonating)
+        setAdminName(data.admin_name || null)
       } else {
         setUser(null)
+        setImpersonating(false)
+        setAdminName(null)
       }
     } catch {
       setUser(null)
+      setImpersonating(false)
+      setAdminName(null)
     } finally {
       setLoading(false)
     }
@@ -106,6 +114,42 @@ export function AuthProvider({ children }) {
     return data
   }
 
+  async function startImpersonation(userId) {
+    if (DEV_MODE) return
+
+    const res = await fetch(`${API_URL}/api/admin/impersonate/${userId}`, {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      credentials: 'include',
+    })
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.message || 'Erro ao impersonar')
+    }
+
+    // Recarregar sessao para pegar o user impersonado
+    await checkSession()
+  }
+
+  async function stopImpersonation() {
+    if (DEV_MODE) return
+
+    const res = await fetch(`${API_URL}/api/admin/stop-impersonate`, {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      credentials: 'include',
+    })
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.message || 'Erro ao parar impersonacao')
+    }
+
+    // Recarregar sessao para voltar ao admin
+    await checkSession()
+  }
+
   async function logout() {
     if (DEV_MODE) {
       setUser(null)
@@ -121,11 +165,13 @@ export function AuthProvider({ children }) {
       })
     } finally {
       setUser(null)
+      setImpersonating(false)
+      setAdminName(null)
     }
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, checkSession }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, checkSession, impersonating, adminName, startImpersonation, stopImpersonation }}>
       {children}
     </AuthContext.Provider>
   )

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApi, apiFetch } from '../../../hooks/useApi.js'
+import { useAuth } from '../../../lib/auth.jsx'
 import { EditIcon, ArchiveIcon, RestoreIcon, ActionBtn } from '../../../components/portal/ActionIcons.jsx'
 
 const STATUS_OPTIONS = [
@@ -23,6 +24,7 @@ const STATES = [
 
 export default function AdminClients() {
   const navigate = useNavigate()
+  const { startImpersonation } = useAuth()
   const [showArchived, setShowArchived] = useState(false)
   const { data, loading, refetch } = useApi(`/api/clients${showArchived ? '?archived=true' : ''}`)
   const [showModal, setShowModal] = useState(false)
@@ -98,6 +100,23 @@ export default function AdminClients() {
                     </td>
                     <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center gap-1">
+                        {c.is_active && c.user_id && (
+                          <ActionBtn
+                            title="Visualizar como cliente"
+                            color="text-portal-muted"
+                            hoverColor="hover:text-copper"
+                            onClick={async () => {
+                              try {
+                                await startImpersonation(c.user_id)
+                                navigate('/portal')
+                              } catch (err) {
+                                alert(err.message)
+                              }
+                            }}
+                          >
+                            <ImpersonateIcon />
+                          </ActionBtn>
+                        )}
                         <ActionBtn title="Editar" color="text-copper" hoverColor="hover:text-copper-dark" onClick={() => { setEditing(c); setShowModal(true) }}>
                           <EditIcon />
                         </ActionBtn>
@@ -438,6 +457,15 @@ function SelectField({ label, value, onChange, options, allowEmpty }) {
         ))}
       </select>
     </div>
+  )
+}
+
+function ImpersonateIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
   )
 }
 

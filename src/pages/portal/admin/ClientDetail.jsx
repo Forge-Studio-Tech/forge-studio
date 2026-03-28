@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApi, apiFetch } from '../../../hooks/useApi.js'
+import { useAuth } from '../../../lib/auth.jsx'
 import { EditIcon, ArchiveIcon, RestoreIcon, ActionBtn } from '../../../components/portal/ActionIcons.jsx'
 
 const STATUS_LABELS = { active: 'Ativo', inactive: 'Inativo', prospect: 'Prospecto', churned: 'Churned' }
@@ -14,6 +15,7 @@ const PAYMENT_STATUS = { pending: 'Pendente', paid: 'Pago', overdue: 'Atrasado',
 export default function ClientDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { startImpersonation } = useAuth()
   const { data, loading, error, refetch } = useApi(`/api/clients/${id}`)
 
   if (loading) {
@@ -62,6 +64,22 @@ export default function ClientDetail() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {client.user_id && (
+            <button
+              onClick={async () => {
+                try {
+                  await startImpersonation(client.user_id)
+                  navigate('/portal')
+                } catch (err) {
+                  alert(err.message)
+                }
+              }}
+              className="flex items-center gap-2 bg-portal-surface border border-portal-border hover:border-copper/40 text-portal-text px-4 py-2 rounded-lg text-sm transition-colors"
+            >
+              <EyeIcon className="w-4 h-4" />
+              Visualizar como cliente
+            </button>
+          )}
           <button
             onClick={() => navigate(`/portal/admin/clients?edit=${id}`)}
             className="bg-copper hover:bg-copper-dark text-stone-950 font-bold px-4 py-2 rounded-lg text-sm transition-colors"
@@ -313,6 +331,15 @@ function StatusBadge({ status }) {
     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${colors[status] || 'bg-portal-border/30 text-portal-muted'}`}>
       {STATUS_LABELS[status] || status}
     </span>
+  )
+}
+
+function EyeIcon({ className }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
   )
 }
 

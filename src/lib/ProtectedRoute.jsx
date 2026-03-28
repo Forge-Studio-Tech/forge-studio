@@ -2,7 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './auth.jsx'
 
 export default function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { user, loading, impersonating } = useAuth()
   const location = useLocation()
 
   if (loading) {
@@ -17,14 +17,18 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />
   }
 
-  // Forcar troca de senha temporaria (prioridade sobre LGPD)
-  if (user.must_change_password && location.pathname !== '/portal/change-password') {
-    return <Navigate to="/portal/change-password" replace />
-  }
+  // Quando impersonando, pular guards de senha e LGPD
+  // O admin nao deve aceitar termos nem trocar senha pelo cliente
+  if (!impersonating) {
+    // Forcar troca de senha temporaria (prioridade sobre LGPD)
+    if (user.must_change_password && location.pathname !== '/portal/change-password') {
+      return <Navigate to="/portal/change-password" replace />
+    }
 
-  // Redirecionar para tela LGPD se consentimento pendente (so apos trocar senha)
-  if (!user.must_change_password && !user.lgpd_consent_at && location.pathname !== '/portal/lgpd') {
-    return <Navigate to="/portal/lgpd" replace />
+    // Redirecionar para tela LGPD se consentimento pendente (so apos trocar senha)
+    if (!user.must_change_password && !user.lgpd_consent_at && location.pathname !== '/portal/lgpd') {
+      return <Navigate to="/portal/lgpd" replace />
+    }
   }
 
   return children

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/portal/Sidebar.jsx'
 import TopBar from '../components/portal/TopBar.jsx'
+import ImpersonationBanner from '../components/portal/ImpersonationBanner.jsx'
 
 export default function PortalLayout() {
   const [collapsed, setCollapsed] = useState(false)
@@ -9,6 +10,8 @@ export default function PortalLayout() {
 
   return (
     <div className="min-h-screen bg-portal-bg text-portal-text">
+      <ImpersonationBanner />
+
       <Sidebar
         collapsed={collapsed}
         onToggle={() => setCollapsed(!collapsed)}
