@@ -90,6 +90,15 @@ function SiteCard({ site, isExpanded, onToggle, onRefresh }) {
   )
 }
 
+const SOURCE_LABELS = {
+  'Organic Search': 'Busca Orgânica', 'Direct': 'Acesso Direto', 'Referral': 'Indicação',
+  'Organic Social': 'Redes Sociais', 'Paid Search': 'Busca Paga', 'Paid Social': 'Social Pago',
+  'Email': 'Email', 'Display': 'Display', 'Unassigned': 'Não identificado',
+  'Organic Video': 'Vídeo Orgânico', 'Paid Video': 'Vídeo Pago', 'Cross-network': 'Cross-network',
+}
+const DEVICE_LABELS = { desktop: 'Computador', mobile: 'Celular', tablet: 'Tablet' }
+const COUNTRY_LABELS = { Brazil: 'Brasil', 'United States': 'Estados Unidos', Portugal: 'Portugal', Argentina: 'Argentina' }
+
 function AnalyticsDetail({ projectId }) {
   const [period, setPeriod] = useState('7d')
   const { data, loading } = useApi(`/api/analytics/${projectId}?period=${period}`)
@@ -97,20 +106,17 @@ function AnalyticsDetail({ projectId }) {
   if (loading) return <div className="px-5 pb-5 text-portal-muted text-xs">Carregando detalhes...</div>
   if (!data) return null
 
-  const { visitors_by_day, sources, devices, engagement, scroll_depth } = data
+  const { visitors_by_day, sources, devices, engagement, locations, scroll_depth } = data
 
   return (
     <div className="border-t border-portal-border px-5 pb-5 pt-4 space-y-5">
-      {/* Seletor de período */}
       <div className="flex gap-1">
         {['7d', '30d', '90d'].map((p) => (
           <button
             key={p}
             onClick={() => setPeriod(p)}
             className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-              period === p
-                ? 'bg-copper text-white'
-                : 'bg-portal-bg text-portal-muted hover:text-portal-text'
+              period === p ? 'bg-copper text-white' : 'bg-portal-bg text-portal-muted hover:text-portal-text'
             }`}
           >
             {p === '7d' ? '7 dias' : p === '30d' ? '30 dias' : '90 dias'}
@@ -118,28 +124,22 @@ function AnalyticsDetail({ projectId }) {
         ))}
       </div>
 
-      {/* Cards resumo */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <MiniStat label="Visitantes" value={visitors_by_day.reduce((s, d) => s + d.visitors, 0)} />
-        <MiniStat label="Sessões" value={visitors_by_day.reduce((s, d) => s + d.sessions, 0)} />
-        <MiniStat label="Bounce Rate" value={`${engagement.bounce_rate}%`} />
-        <MiniStat label="Tempo Médio" value={formatDuration(engagement.avg_session_duration)} />
+        <MiniStat label="Visitantes" value={visitors_by_day.reduce((s, d) => s + d.visitors, 0)} tooltip="Pessoas únicas que acessaram o site no período" />
+        <MiniStat label="Sessões" value={visitors_by_day.reduce((s, d) => s + d.sessions, 0)} tooltip="Total de visitas (uma pessoa pode gerar várias sessões)" />
+        <MiniStat label="Saíram rápido" value={`${engagement.bounce_rate}%`} tooltip="Visitantes que saíram sem interagir com o site (clicar, rolar, navegar)" />
+        <MiniStat label="Tempo Médio" value={formatDuration(engagement.avg_session_duration)} tooltip="Tempo médio que cada visitante permaneceu no site" />
       </div>
 
-      {/* Gráfico visitantes por dia */}
       {visitors_by_day.length > 1 && (
         <div>
-          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-2">Visitantes por Dia</p>
+          <SectionTitle label="Visitantes por Dia" tooltip="Evolução diária de visitantes únicos no período selecionado" />
           <div className="bg-portal-bg rounded-lg p-3">
             <svg viewBox="0 0 600 80" className="w-full h-20" preserveAspectRatio="none">
               {(() => {
                 const maxV = Math.max(...visitors_by_day.map((d) => d.visitors))
                 return (
-                  <polyline
-                    fill="none"
-                    stroke="#D5851E"
-                    strokeWidth="1.5"
-                    vectorEffect="non-scaling-stroke"
+                  <polyline fill="none" stroke="#D5851E" strokeWidth="1.5" vectorEffect="non-scaling-stroke"
                     points={visitors_by_day.map((d, i) => `${(i / (visitors_by_day.length - 1)) * 600},${76 - (d.visitors / maxV) * 68}`).join(' ')}
                   />
                 )
@@ -153,14 +153,13 @@ function AnalyticsDetail({ projectId }) {
         </div>
       )}
 
-      {/* Fontes + Dispositivos lado a lado */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {sources.length > 0 && (
           <div>
-            <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-2">Fontes de Tráfego</p>
+            <SectionTitle label="Fontes de Tráfego" tooltip="De onde vieram os visitantes: busca no Google, acesso direto, redes sociais, etc." />
             <div className="space-y-2">
               {sources.map((s) => (
-                <BarRow key={s.source} label={s.source} value={s.sessions} percentage={s.percentage} />
+                <BarRow key={s.source} label={SOURCE_LABELS[s.source] || s.source} value={s.sessions} percentage={s.percentage} />
               ))}
             </div>
           </div>
@@ -168,20 +167,36 @@ function AnalyticsDetail({ projectId }) {
 
         {devices.length > 0 && (
           <div>
-            <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-2">Dispositivos</p>
+            <SectionTitle label="Dispositivos" tooltip="Tipo de aparelho usado para acessar o site" />
             <div className="space-y-2">
               {devices.map((d) => (
-                <BarRow key={d.device} label={d.device} value={d.sessions} percentage={d.percentage} />
+                <BarRow key={d.device} label={DEVICE_LABELS[d.device] || d.device} value={d.sessions} percentage={d.percentage} />
               ))}
             </div>
           </div>
         )}
       </div>
 
-      {/* Scroll depth */}
+      {locations?.length > 0 && (
+        <div>
+          <SectionTitle label="Localização" tooltip="Cidades de onde os visitantes acessaram o site" />
+          <div className="space-y-2">
+            {locations.map((l) => (
+              <BarRow
+                key={`${l.city}-${l.country}`}
+                label={`${l.city === '(not set)' ? 'Não identificado' : l.city}, ${COUNTRY_LABELS[l.country] || l.country}`}
+                value={l.users}
+                percentage={l.percentage}
+                color="bg-success/20"
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       {scroll_depth.length > 0 && (
         <div>
-          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-2">Scroll por Seção</p>
+          <SectionTitle label="Scroll por Seção" tooltip="Quantos visitantes viram cada seção do site ao rolar a página" />
           <div className="space-y-2">
             {scroll_depth.map((s) => (
               <BarRow key={s.section} label={s.section} value={s.views} percentage={s.percentage} color="bg-copper/30" />
@@ -193,10 +208,46 @@ function AnalyticsDetail({ projectId }) {
   )
 }
 
-function MiniStat({ label, value }) {
+function Tooltip({ text }) {
+  const [show, setShow] = useState(false)
+  return (
+    <span className="relative inline-flex ml-1">
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); setShow(!show) }}
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        className="text-portal-muted hover:text-copper transition-colors"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M12 18h.01" />
+        </svg>
+      </button>
+      {show && (
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2.5 py-1.5 bg-stone-800 text-stone-200 text-[11px] rounded-lg z-50 shadow-lg w-max max-w-[250px] text-center leading-tight">
+          {text}
+        </span>
+      )}
+    </span>
+  )
+}
+
+function SectionTitle({ label, tooltip }) {
+  return (
+    <div className="flex items-center mb-2">
+      <p className="text-portal-muted text-[10px] uppercase tracking-wider">{label}</p>
+      {tooltip && <Tooltip text={tooltip} />}
+    </div>
+  )
+}
+
+function MiniStat({ label, value, tooltip }) {
   return (
     <div className="bg-portal-bg rounded-lg p-3">
-      <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">{label}</p>
+      <div className="flex items-center mb-0.5">
+        <p className="text-portal-muted text-[10px] uppercase tracking-wider">{label}</p>
+        {tooltip && <Tooltip text={tooltip} />}
+      </div>
       <p className="text-lg font-bold text-portal-text">{value}</p>
     </div>
   )
