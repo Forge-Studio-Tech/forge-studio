@@ -60,9 +60,8 @@ export default function Hero({ logoRef }) {
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-stone-100 mb-8">
-            Cada projeto<br />
-            <ForgedWord /><br />
-            do zero.
+            Foco em cada<br />
+            <span className="text-copper">detalhe.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-stone-400 max-w-md leading-relaxed mb-10">
