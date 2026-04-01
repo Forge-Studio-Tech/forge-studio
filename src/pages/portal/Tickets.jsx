@@ -154,6 +154,7 @@ export default function Tickets() {
         </div>
       ) : (
         <div className="bg-portal-surface border border-portal-border rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-portal-border text-portal-muted uppercase tracking-wider text-xs">
@@ -193,6 +194,7 @@ export default function Tickets() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

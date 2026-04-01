@@ -63,7 +63,7 @@ export default function Billing() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-portal-text">Financeiro</h1>
           <p className="text-portal-muted text-sm mt-1">
@@ -82,7 +82,7 @@ export default function Billing() {
 
       {/* Summary cards (admin only) */}
       {isAdmin && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <SummaryCard label="Recebido" value={totalPayments} color="text-success" />
           <SummaryCard label="Pendente" value={totalPending} color="text-warning" />
           <SummaryCard label="Vendas" value={totalSales} color="text-copper" />
@@ -93,7 +93,7 @@ export default function Billing() {
 
       {/* Tabs (admin only) */}
       {isAdmin && (
-        <div className="flex gap-1 mb-6 bg-portal-surface border border-portal-border rounded-lg p-1 w-fit">
+        <div className="flex flex-wrap gap-1 mb-6 bg-portal-surface border border-portal-border rounded-lg p-1 w-fit">
           {TABS.map((tab) => (
             <button
               key={tab.key}
@@ -226,6 +226,7 @@ function PaymentsTab({ payments, loading, isAdmin, refetch, onEdit }) {
   if (loading) return <Spinner />
   return (
     <div className="bg-portal-surface border border-portal-border rounded-xl overflow-hidden">
+      <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
           <tr className="border-b border-portal-border">
@@ -294,6 +295,7 @@ function PaymentsTab({ payments, loading, isAdmin, refetch, onEdit }) {
           )}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }
@@ -305,6 +307,7 @@ function SalesTab({ sales, loading, refetch, onEdit }) {
   if (loading) return <Spinner />
   return (
     <div className="bg-portal-surface border border-portal-border rounded-xl overflow-hidden">
+      <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
           <tr className="border-b border-portal-border">
@@ -380,6 +383,7 @@ function SalesTab({ sales, loading, refetch, onEdit }) {
           )}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }
@@ -391,6 +395,7 @@ function ExpensesTab({ expenses, loading, refetch, onEdit }) {
   if (loading) return <Spinner />
   return (
     <div className="bg-portal-surface border border-portal-border rounded-xl overflow-hidden">
+      <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
           <tr className="border-b border-portal-border">
@@ -444,6 +449,7 @@ function ExpensesTab({ expenses, loading, refetch, onEdit }) {
           )}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }
@@ -498,7 +504,7 @@ function PaymentModal({ payment, clients, onClose, onSaved }) {
             ))}
           </select>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-portal-text mb-1">Valor (R$)</label>
             <input type="number" step="0.01" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required className={inputClass} />
@@ -515,7 +521,7 @@ function PaymentModal({ payment, clients, onClose, onSaved }) {
             </div>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-portal-text mb-1">Mes de referencia</label>
             <input type="date" value={form.reference_month} onChange={(e) => setForm({ ...form, reference_month: e.target.value })} required className={inputClass} />
@@ -605,7 +611,7 @@ function SaleModal({ sale, clients, projects, onClose, onSaved }) {
   return (
     <ModalShell title={isEdit ? 'Editar Venda' : 'Registrar Venda'} onClose={onClose} wide>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-portal-text mb-1">Cliente</label>
             <select value={form.client_id} onChange={(e) => handleClientChange(e.target.value)} className={`${inputClass} h-[38px]`}>
@@ -629,7 +635,7 @@ function SaleModal({ sale, clients, projects, onClose, onSaved }) {
           <label className="block text-sm font-medium text-portal-text mb-1">Descricao</label>
           <input type="text" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required className={inputClass} placeholder="Ex: Site institucional completo" />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-portal-text mb-1">Valor da Venda (R$)</label>
             <input type="number" step="0.01" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required className={inputClass} />
@@ -648,7 +654,7 @@ function SaleModal({ sale, clients, projects, onClose, onSaved }) {
               Preenchido automaticamente a partir do cadastro de {selectedClient.company_name || selectedClient.user_name}
             </p>
           )}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs text-portal-muted mb-1">Tipo</label>
               <select value={form.commission_type} onChange={(e) => setForm({ ...form, commission_type: e.target.value })} className={`${inputClass} h-[38px]`}>
@@ -740,7 +746,7 @@ function ExpenseModal({ expense, clients, onClose, onSaved }) {
           <label className="block text-sm font-medium text-portal-text mb-1">Descricao</label>
           <input type="text" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required className={inputClass} placeholder="Ex: Hospedagem VPS Hostinger" />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-portal-text mb-1">Valor (R$)</label>
             <input type="number" step="0.01" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required className={inputClass} />
@@ -750,7 +756,7 @@ function ExpenseModal({ expense, clients, onClose, onSaved }) {
             <input type="date" value={form.expense_date} onChange={(e) => setForm({ ...form, expense_date: e.target.value })} required className={inputClass} />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-portal-text mb-1">Categoria</label>
             <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={`${inputClass} h-[38px]`}>

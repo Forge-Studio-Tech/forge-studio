@@ -131,7 +131,7 @@ export default function Services() {
               {/* Seta entre cards (desktop) */}
               {i < services.length - 1 && (
                 <div className="hidden md:flex items-center justify-center px-3">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D5851E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-50">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8861B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-50">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -140,7 +140,7 @@ export default function Services() {
               {/* Seta entre cards (mobile) */}
               {i < services.length - 1 && (
                 <div className="flex md:hidden justify-center -my-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D5851E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-50 rotate-90">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8861B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-50 rotate-90">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </div>

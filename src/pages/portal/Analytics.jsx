@@ -147,7 +147,7 @@ function AnalyticsDetail({ projectId }) {
               {(() => {
                 const maxV = Math.max(...visitors_by_day.map((d) => d.visitors))
                 return (
-                  <polyline fill="none" stroke="#D5851E" strokeWidth="1.5" vectorEffect="non-scaling-stroke"
+                  <polyline fill="none" stroke="#E8861B" strokeWidth="1.5" vectorEffect="non-scaling-stroke"
                     points={visitors_by_day.map((d, i) => `${(i / (visitors_by_day.length - 1)) * 600},${76 - (d.visitors / maxV) * 68}`).join(' ')}
                   />
                 )

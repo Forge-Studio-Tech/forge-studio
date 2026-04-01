@@ -20,8 +20,8 @@ export default function TopBar({ onMenuClick }) {
       {/* User info */}
       <div className="flex items-center gap-3">
         <div className="text-right">
-          <p className="text-sm font-medium text-portal-text">{user?.name}</p>
-          <p className="text-xs text-portal-muted capitalize">{user?.role}</p>
+          <p className="text-sm font-medium text-portal-text truncate max-w-[120px] sm:max-w-none">{user?.name}</p>
+          <p className="text-xs text-portal-muted capitalize hidden sm:block">{user?.role}</p>
         </div>
         <div className="w-8 h-8 rounded-full bg-copper/20 flex items-center justify-center text-copper font-bold text-sm">
           {user?.name?.charAt(0)?.toUpperCase() || '?'}

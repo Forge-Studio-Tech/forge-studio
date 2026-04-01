@@ -34,7 +34,7 @@ export default function AdminClients() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-portal-text">Clientes</h1>
           <div className="flex items-center gap-3 mt-1">
@@ -61,6 +61,7 @@ export default function AdminClients() {
         </div>
       ) : (
         <div className="bg-portal-surface border border-portal-border rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-portal-border">
@@ -143,6 +144,7 @@ export default function AdminClients() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -306,7 +308,7 @@ function ClientModal({ client, onClose, onSaved }) {
                 <label htmlFor="has_commission" className="text-sm text-portal-text">Tem comissão</label>
               </div>
               {form.has_commission && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <SelectField
                     label="Tipo de Comissão"
                     value={form.commission_type}
@@ -353,7 +355,7 @@ function ClientModal({ client, onClose, onSaved }) {
               <Field label="Rua" value={form.street} onChange={(v) => set('street', v)} />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <Field label="Número" value={form.address_number} onChange={(v) => set('address_number', v)} />
             <Field label="Complemento" value={form.complement} onChange={(v) => set('complement', v)} />
             <Field label="Cidade" value={form.city} onChange={(v) => set('city', v)} />

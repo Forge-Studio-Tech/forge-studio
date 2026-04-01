@@ -33,7 +33,7 @@ export default function Projects() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-portal-text">
             {isAdmin ? 'Todos os Projetos' : 'Meus Projetos'}
@@ -72,6 +72,7 @@ export default function Projects() {
         </div>
       ) : (
         <div className="bg-portal-surface border border-portal-border rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-portal-border">
@@ -148,6 +149,7 @@ export default function Projects() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -235,7 +237,7 @@ function ProjectModal({ project, clients, onClose, onSaved }) {
             <label className="block text-sm font-medium text-portal-text mb-1">Nome do Projeto</label>
             <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className={inputClass} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-portal-text mb-1">Tipo</label>
               <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className={inputClass}>
@@ -268,7 +270,7 @@ function ProjectModal({ project, clients, onClose, onSaved }) {
             <label className="block text-sm font-medium text-portal-text mb-1">URL Producao</label>
             <input type="url" value={form.production_url} onChange={(e) => setForm({ ...form, production_url: e.target.value })} placeholder="https://..." className={inputClass} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-portal-text mb-1">Inicio</label>
               <input type="date" value={form.started_at} onChange={(e) => setForm({ ...form, started_at: e.target.value })} className={inputClass} />
@@ -281,7 +283,7 @@ function ProjectModal({ project, clients, onClose, onSaved }) {
           {/* Integrações (admin only) */}
           <div className="border-t border-portal-border pt-4 mt-2">
             <p className="text-[10px] font-semibold text-portal-muted uppercase tracking-widest mb-3">Integrações</p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-portal-text mb-1">Zabbix Host ID</label>
                 <input type="text" value={form.zabbix_host_id} onChange={(e) => setForm({ ...form, zabbix_host_id: e.target.value })} placeholder="10776" className={inputClass} />

@@ -111,7 +111,7 @@ function ClientSiteDetail({ projectId }) {
 
   return (
     <div className="border-t border-portal-border px-5 pb-5 pt-4 space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="bg-portal-bg rounded-lg p-3">
           <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Uptime 24h</p>
           <p className={`text-lg font-bold ${site.uptime_24h >= 99.9 ? 'text-success' : site.uptime_24h >= 99 ? 'text-warning' : 'text-danger'}`}>
@@ -140,7 +140,7 @@ function ClientSiteDetail({ projectId }) {
                 return (
                   <polyline
                     fill="none"
-                    stroke="#D5851E"
+                    stroke="#E8861B"
                     strokeWidth="1.5"
                     vectorEffect="non-scaling-stroke"
                     points={sampled.map((pt, i) => `${(i / (sampled.length - 1)) * w},${h - 4 - (pt.response_time_ms / maxMs) * (h - 8)}`).join(' ')}

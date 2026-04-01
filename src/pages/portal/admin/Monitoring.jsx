@@ -193,7 +193,7 @@ function ResponseChart({ history }) {
         <svg viewBox={`0 0 600 ${chartHeight}`} className="w-full h-20" preserveAspectRatio="none">
           <polyline
             fill="none"
-            stroke="#D5851E"
+            stroke="#E8861B"
             strokeWidth="1.5"
             vectorEffect="non-scaling-stroke"
             points={sampled.map((h, i) => `${(i / (sampled.length - 1)) * 600},${chartHeight - 4 - (h.response_time_ms / maxMs) * (chartHeight - 8)}`).join(' ')}

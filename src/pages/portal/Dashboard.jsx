@@ -145,7 +145,7 @@ function MonitoringCard({ site }) {
       {/* Expandido — stats + gráfico + incidentes */}
       {expanded && (
         <div className="border-t border-portal-border px-5 pb-4 pt-4 space-y-4">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-portal-bg rounded-lg p-3">
               <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Uptime 24h</p>
               <p className={`text-lg font-bold ${
@@ -182,7 +182,7 @@ function MonitoringCard({ site }) {
                     return (
                       <polyline
                         fill="none"
-                        stroke="#D5851E"
+                        stroke="#E8861B"
                         strokeWidth="1.5"
                         vectorEffect="non-scaling-stroke"
                         points={sampled.map((pt, i) => `${(i / (sampled.length - 1)) * w},${h - 4 - (pt.response_time_ms / maxMs) * (h - 8)}`).join(' ')}
@@ -287,7 +287,7 @@ function AnalyticsCardDetail({ projectId }) {
           <p className="text-lg font-bold text-portal-text">{visitors_by_day.reduce((s, d) => s + d.sessions, 0)}</p>
         </div>
         <div className="bg-portal-bg rounded-lg p-3">
-          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Bounce Rate</p>
+          <p className="text-portal-muted text-[10px] uppercase tracking-wider mb-0.5">Taxa de Rejeição</p>
           <p className="text-lg font-bold text-portal-text">{engagement.bounce_rate}%</p>
         </div>
         <div className="bg-portal-bg rounded-lg p-3">
@@ -308,7 +308,7 @@ function AnalyticsCardDetail({ projectId }) {
                 return (
                   <polyline
                     fill="none"
-                    stroke="#D5851E"
+                    stroke="#E8861B"
                     strokeWidth="1.5"
                     vectorEffect="non-scaling-stroke"
                     points={visitors_by_day.map((d, i) => `${(i / (visitors_by_day.length - 1)) * 600},${46 - (d.visitors / maxV) * 40}`).join(' ')}

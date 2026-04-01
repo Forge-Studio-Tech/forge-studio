@@ -40,7 +40,7 @@ export default function AdminPlans() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-portal-text">Planos</h1>
           <p className="text-portal-muted text-sm mt-1">Gerencie planos e serviços contratados</p>
@@ -75,6 +75,7 @@ export default function AdminPlans() {
         </div>
       ) : (
         <div className="bg-portal-surface border border-portal-border rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-portal-border">
@@ -175,6 +176,7 @@ export default function AdminPlans() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -334,7 +336,7 @@ function PlanModal({ plan, clients, projects, onClose, onSaved }) {
               ))}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-portal-text mb-1">
                 Valor mensal (R$) *
@@ -380,7 +382,7 @@ function PlanModal({ plan, clients, projects, onClose, onSaved }) {
               )}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-portal-text mb-1">Inicio</label>
               <input type="date" value={form.started_at} onChange={(e) => setForm({ ...form, started_at: e.target.value })} className={inputClass} />
