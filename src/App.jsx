@@ -8,32 +8,78 @@ import FAQ from './components/FAQ'
 import CTA from './components/CTA'
 import Footer from './components/Footer'
 import WhatsAppButton from './components/WhatsAppButton'
-import FloatingLogo from './components/FloatingLogo'
 import ForgeAnalytics from './components/ForgeAnalytics'
 
-export default function App() {
-  // Refs para os dois "âncoras" do logo — placeholder no Hero e logo no Navbar
-  const heroLogoRef = useRef(null)
-  const navLogoRef  = useRef(null)
-
-  // heroVisible controla visibilidade do logo no Navbar (compartilhado com Navbar e FloatingLogo)
-  const [heroVisible, setHeroVisible] = useState(true)
+// Logo único que anima entre Hero e Navbar no mobile
+function FloatingMobileLogo({ heroRef, navRef }) {
+  const [style, setStyle] = useState({})
+  const heroRect = useRef(null)
 
   useEffect(() => {
-    const hero = document.getElementById('hero')
-    if (!hero) return
-    const observer = new IntersectionObserver(
-      ([entry]) => setHeroVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    )
-    observer.observe(hero)
-    return () => observer.disconnect()
-  }, [])
+    const isMobile = () => window.innerWidth < 768
+
+    const capture = () => {
+      if (!heroRef.current) return
+      // Medir posição do placeholder no Hero relativo ao viewport quando scroll=0
+      const r = heroRef.current.getBoundingClientRect()
+      heroRect.current = {
+        left: r.left + window.scrollX,
+        top: r.top + window.scrollY,
+        height: r.height,
+      }
+    }
+
+    const update = () => {
+      if (!isMobile()) { setStyle({ display: 'none' }); return }
+      if (!heroRect.current) capture()
+      if (!heroRect.current || !navRef.current) return
+
+      const from = heroRect.current
+      const navR = navRef.current.getBoundingClientRect()
+      const scrollY = window.scrollY
+
+      // Distância de scroll necessária pra completar a transição
+      const totalDist = Math.max(1, from.top - (navR.top + scrollY))
+      const progress = Math.min(1, Math.max(0, scrollY / totalDist))
+
+      // Interpolar posição e tamanho
+      const top = from.top - scrollY + (navR.top - from.top + scrollY) * progress
+      const left = from.left + (navR.left - from.left) * progress
+      const height = from.height + (navR.height - from.height) * progress
+
+      setStyle({
+        display: 'block',
+        position: 'fixed',
+        top: `${top}px`,
+        left: `${left}px`,
+        height: `${height}px`,
+        width: 'auto',
+        zIndex: 60,
+        pointerEvents: 'none',
+      })
+    }
+
+    const onScroll = () => requestAnimationFrame(update)
+    const onResize = () => { heroRect.current = null; setTimeout(() => { capture(); update() }, 50) }
+
+    setTimeout(() => { capture(); update() }, 100)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onResize)
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onResize) }
+  }, [heroRef, navRef])
+
+  return <img src="/ForgeLogo.png" alt="" aria-hidden="true" style={style} />
+}
+
+export default function App() {
+  const heroLogoRef = useRef(null)
+  const navLogoRef = useRef(null)
 
   return (
     <div className="bg-[#0c0a09] min-h-screen">
-      <Navbar logoRef={navLogoRef} heroVisible={heroVisible} />
+      <Navbar logoRef={navLogoRef} />
       <Hero logoRef={heroLogoRef} />
+      <FloatingMobileLogo heroRef={heroLogoRef} navRef={navLogoRef} />
       <Portfolio />
       <About />
       <Services />
@@ -41,8 +87,6 @@ export default function App() {
       <CTA />
       <Footer />
       <WhatsAppButton />
-      {/* Logo flutuante — anima entre Hero e Navbar no mobile */}
-      <FloatingLogo heroLogoRef={heroLogoRef} navLogoRef={navLogoRef} />
       <ForgeAnalytics measurementId="G-7W28TSS4V4" sections={['hero', 'portfolio', 'sobre', 'servicos', 'faq', 'cta']} />
     </div>
   )

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-export default function Navbar({ logoRef, heroVisible }) {
+export default function Navbar({ logoRef }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
@@ -10,17 +10,13 @@ export default function Navbar({ logoRef, heroVisible }) {
       {/* Logo */}
       <a
         href="#"
-        className={`flex items-center gap-3 transition-opacity duration-500 ${
-          heroVisible
-            ? 'opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto'
-            : 'opacity-100 pointer-events-auto'
-        }`}
+        className="flex items-center gap-3"
       >
         <img
           ref={logoRef}
           src="/ForgeLogo.png"
           alt="Forge Studio"
-          className="h-10 w-auto"
+          className="h-10 w-auto md:visible invisible"
         />
         <span className="text-stone-100 font-black text-xl tracking-tight hidden sm:block">
           Forge Studio

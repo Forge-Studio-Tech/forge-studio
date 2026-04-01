@@ -43,13 +43,12 @@ export default function Hero({ logoRef }) {
 
         {/* Coluna esquerda — texto */}
         <div>
-          {/* Logo mobile — placeholder invisível que serve de âncora para o FloatingLogo */}
+          {/* Logo mobile — placeholder invisível, FloatingMobileLogo cobre */}
           <img
             ref={logoRef}
             src="/ForgeLogo.png"
             alt="Forge Studio"
-            className="h-24 w-auto mb-6 md:hidden"
-            style={{ visibility: 'hidden' }}
+            className="h-24 w-auto mb-6 md:hidden invisible"
           />
 
           <div className="inline-flex items-center gap-2.5 border border-copper/50 bg-copper/5 px-4 py-2 mb-8">
