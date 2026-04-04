@@ -25,11 +25,20 @@ const STATUS_LABELS = {
 
 export default function Leads() {
   const [statusFilter, setStatusFilter] = useState('')
+  const [search, setSearch] = useState('')
   const { data, loading, refetch } = useApi(`/api/leads${statusFilter ? `?status=${statusFilter}` : ''}`)
   const [editingId, setEditingId] = useState(null)
   const [editNotes, setEditNotes] = useState('')
 
-  const leads = data?.leads || []
+  const allLeads = data?.leads || []
+  const leads = search
+    ? allLeads.filter(l =>
+        l.name?.toLowerCase().includes(search.toLowerCase()) ||
+        l.business_name?.toLowerCase().includes(search.toLowerCase()) ||
+        l.whatsapp?.includes(search) ||
+        l.segment?.toLowerCase().includes(search.toLowerCase())
+      )
+    : allLeads
 
   async function updateStatus(id, status) {
     try {
@@ -67,18 +76,38 @@ export default function Leads() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-portal-text">Leads</h1>
-          <p className="text-portal-muted text-sm">{leads.length} leads capturados</p>
-        </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-portal-surface border border-portal-border rounded-lg px-3 py-2 text-sm text-portal-text"
-        >
-          {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-portal-text mb-1">Leads</h1>
+        <p className="text-portal-muted text-sm">{leads.length} {statusFilter ? STATUS_LABELS[statusFilter]?.toLowerCase() || '' : ''} de {allLeads.length} leads</p>
+      </div>
+
+      {/* Busca */}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar por nome, negócio, WhatsApp ou segmento..."
+          className="w-full bg-portal-surface border border-portal-border rounded-lg px-4 py-2.5 text-sm text-portal-text placeholder:text-portal-muted focus:outline-none focus:border-copper"
+        />
+      </div>
+
+      {/* Filtros por status */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {STATUS_OPTIONS.map(o => (
+          <button
+            key={o.value}
+            onClick={() => setStatusFilter(statusFilter === o.value ? '' : o.value)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              statusFilter === o.value
+                ? 'bg-copper text-stone-950'
+                : 'bg-portal-surface border border-portal-border text-portal-muted hover:text-portal-text hover:border-copper/40'
+            }`}
+          >
+            {o.label}
+            {o.value && ` (${allLeads.filter(l => l.status === o.value).length})`}
+          </button>
+        ))}
       </div>
 
       {loading ? (
