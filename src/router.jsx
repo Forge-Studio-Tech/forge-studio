@@ -17,6 +17,7 @@ import DashboardMRR from './pages/portal/admin/DashboardMRR.jsx'
 import Monitoring from './pages/portal/admin/Monitoring.jsx'
 import ClientMonitoring from './pages/portal/Monitoring.jsx'
 import AdminAnalytics from './pages/portal/admin/Analytics.jsx'
+import AdminLeads from './pages/portal/admin/Leads.jsx'
 import ClientAnalytics from './pages/portal/Analytics.jsx'
 import Tickets from './pages/portal/Tickets.jsx'
 import TicketDetail from './pages/portal/TicketDetail.jsx'
@@ -83,6 +84,7 @@ export default function AppRouter() {
           <Route path="admin/dashboard-mrr" element={<DashboardMRR />} />
           <Route path="admin/monitoring" element={<Monitoring />} />
           <Route path="admin/analytics" element={<AdminAnalytics />} />
+          <Route path="admin/leads" element={<AdminLeads />} />
         </Route>
       </Routes>
     </AuthProvider>

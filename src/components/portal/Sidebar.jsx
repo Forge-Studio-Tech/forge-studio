@@ -25,6 +25,7 @@ const adminMainLinks = [
 
 const adminSectionLinks = [
   { to: '/portal/admin/dashboard-mrr', label: 'Dashboard MRR', icon: ChartIcon },
+  { to: '/portal/admin/leads', label: 'Leads', icon: UsersIcon },
   { to: '/portal/admin/plan-templates', label: 'Tipos de Plano', icon: CubeIcon },
   { to: '/portal/admin/lgpd', label: 'LGPD', icon: ShieldIcon },
 ]
