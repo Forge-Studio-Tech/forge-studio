@@ -1,6 +1,53 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, memo } from 'react'
 import { useApi, apiFetch } from '../../../hooks/useApi.js'
 import { useUnreadMessages } from '../../../hooks/useUnreadMessages.js'
+
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
+// Componente de mídia que baixa via fetch (cookie auth) e usa blob URL
+const MediaAttachment = memo(function MediaAttachment({ msgId, type }) {
+  const [url, setUrl] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+
+  const load = useCallback(async () => {
+    if (url || loading) return
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/whatsapp/messages/${msgId}/media`, { credentials: 'include' })
+      if (!res.ok) throw new Error('falha')
+      const blob = await res.blob()
+      setUrl(URL.createObjectURL(blob))
+    } catch {
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }, [msgId, url, loading])
+
+  useEffect(() => { return () => { if (url) URL.revokeObjectURL(url) } }, [url])
+
+  if (error) return <p className="italic text-danger text-xs">falha ao carregar mídia</p>
+
+  if (type === 'audio') {
+    if (!url) return <button onClick={load} disabled={loading} className="text-copper text-xs underline">{loading ? 'Carregando...' : '▶ Tocar áudio'}</button>
+    return <audio controls src={url} className="max-w-full" />
+  }
+  if (type === 'image') {
+    if (!url && !loading) { load() }
+    if (!url) return <div className="w-40 h-40 bg-portal-border/20 rounded animate-pulse" />
+    return <a href={url} target="_blank" rel="noopener noreferrer"><img src={url} alt="" className="max-w-full rounded" /></a>
+  }
+  if (type === 'video') {
+    if (!url) return <button onClick={load} disabled={loading} className="text-copper text-xs underline">{loading ? 'Carregando...' : '▶ Carregar vídeo'}</button>
+    return <video controls src={url} className="max-w-full rounded" />
+  }
+  if (type === 'document') {
+    if (!url) return <button onClick={load} disabled={loading} className="text-copper text-xs underline">{loading ? 'Carregando...' : '📎 Baixar documento'}</button>
+    return <a href={url} download className="text-copper underline">📎 Salvar documento</a>
+  }
+  return null
+})
 
 const fmtTime = (iso) => {
   if (!iso) return ''
@@ -351,9 +398,10 @@ export default function Messages() {
                             : 'bg-portal-bg text-portal-text border border-portal-border'
                         }`}
                       >
-                        {msg.body && <p className="whitespace-pre-wrap break-words">{msg.body}</p>}
-                        {msg.message_type !== 'text' && !msg.body && (
-                          <p className="italic text-portal-muted">[{msg.message_type}]</p>
+                        {msg.message_type !== 'text' && <MediaAttachment msgId={msg.id} type={msg.message_type} />}
+                        {msg.body && msg.message_type === 'text' && <p className="whitespace-pre-wrap break-words">{msg.body}</p>}
+                        {msg.body && msg.message_type !== 'text' && msg.body !== '[audio]' && (
+                          <p className="whitespace-pre-wrap break-words mt-1">{msg.body}</p>
                         )}
                         <p className={`text-xs mt-1 ${msg.direction === 'outgoing' ? 'text-copper/60' : 'text-portal-muted'}`}>
                           {fmtTime(msg.wa_timestamp || msg.created_at)}
@@ -366,7 +414,24 @@ export default function Messages() {
               </div>
 
               {/* Send */}
-              <form onSubmit={handleSend} className="p-3 border-t border-portal-border flex gap-2">
+              <form onSubmit={handleSend} className="p-3 border-t border-portal-border flex gap-2 items-center">
+                <AudioRecorder
+                  onSend={async (base64) => {
+                    try {
+                      await apiFetch('/api/whatsapp/send-audio', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                          instance: selectedConv.instance,
+                          phone: selectedConv.remote_phone,
+                          audio_base64: base64,
+                        }),
+                      })
+                      loadMessages(selectedJid, selectedInstance)
+                    } catch (err) {
+                      alert('Erro ao enviar audio: ' + err.message)
+                    }
+                  }}
+                />
                 <input
                   type="text"
                   value={newMessage}
@@ -522,4 +587,100 @@ function ContactPanel({ conv, onClose, onSaved }) {
       </div>
     </div>
   )
+}
+
+// Gravador de áudio — MediaRecorder API
+function AudioRecorder({ onSend }) {
+  const [recording, setRecording] = useState(false)
+  const [sending, setSending] = useState(false)
+  const recorderRef = useRef(null)
+  const chunksRef = useRef([])
+  const streamRef = useRef(null)
+
+  async function start() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      streamRef.current = stream
+      chunksRef.current = []
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')
+          ? 'audio/ogg;codecs=opus'
+          : 'audio/webm'
+      const recorder = new MediaRecorder(stream, { mimeType })
+      recorder.ondataavailable = e => e.data.size > 0 && chunksRef.current.push(e.data)
+      recorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop())
+        const blob = new Blob(chunksRef.current, { type: mimeType })
+        if (blob.size < 1000) return // muito curto
+        setSending(true)
+        try {
+          const base64 = await blobToBase64(blob)
+          await onSend(base64)
+        } finally {
+          setSending(false)
+        }
+      }
+      recorder.start()
+      recorderRef.current = recorder
+      setRecording(true)
+    } catch (err) {
+      alert('Erro ao acessar microfone: ' + err.message)
+    }
+  }
+
+  function stop() {
+    if (recorderRef.current && recorderRef.current.state !== 'inactive') {
+      recorderRef.current.stop()
+      recorderRef.current = null
+    }
+    setRecording(false)
+  }
+
+  function cancel() {
+    chunksRef.current = []
+    if (recorderRef.current && recorderRef.current.state !== 'inactive') {
+      recorderRef.current.onstop = null
+      recorderRef.current.stop()
+    }
+    streamRef.current?.getTracks().forEach(t => t.stop())
+    setRecording(false)
+  }
+
+  if (sending) {
+    return <div className="text-portal-muted text-xs px-2">Enviando...</div>
+  }
+
+  if (recording) {
+    return (
+      <div className="flex items-center gap-2">
+        <button type="button" onClick={cancel} title="Cancelar" className="text-danger text-lg hover:text-danger/80">✕</button>
+        <span className="text-danger text-xs font-medium animate-pulse">● gravando</span>
+        <button type="button" onClick={stop} title="Enviar" className="text-success text-xl hover:text-success/80">✓</button>
+      </div>
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={start}
+      title="Gravar áudio"
+      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-portal-border/30 text-portal-muted hover:text-copper transition-colors"
+    >
+      🎤
+    </button>
+  )
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const base64 = String(reader.result).split(',')[1]
+      resolve(base64)
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(blob)
+  })
 }
