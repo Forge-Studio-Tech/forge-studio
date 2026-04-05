@@ -403,6 +403,11 @@ export default function Messages() {
                         {msg.body && msg.message_type !== 'text' && msg.body !== '[audio]' && (
                           <p className="whitespace-pre-wrap break-words mt-1">{msg.body}</p>
                         )}
+                        {msg.transcription && (
+                          <p className="text-xs italic text-portal-muted mt-1 border-l-2 border-copper/50 pl-2">
+                            📝 {msg.transcription}
+                          </p>
+                        )}
                         <p className={`text-xs mt-1 ${msg.direction === 'outgoing' ? 'text-copper/60' : 'text-portal-muted'}`}>
                           {fmtTime(msg.wa_timestamp || msg.created_at)}
                         </p>
