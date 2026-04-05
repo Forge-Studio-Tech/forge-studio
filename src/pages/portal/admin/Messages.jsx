@@ -11,22 +11,47 @@ const fmtTime = (iso) => {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 }
 
-// Som de notificação via Web Audio API (sem dependência de arquivo)
+// Som de notificação — AudioContext persistente, resumido na primeira interação
+let audioCtx = null
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume()
+  }
+  return audioCtx
+}
+
+// Resume AudioContext em qualquer click (requisito do browser)
+if (typeof window !== 'undefined') {
+  const resumeAudio = () => {
+    getAudioContext()
+    document.removeEventListener('click', resumeAudio)
+    document.removeEventListener('touchstart', resumeAudio)
+  }
+  document.addEventListener('click', resumeAudio, { once: true })
+  document.addEventListener('touchstart', resumeAudio, { once: true })
+}
+
 function playNotificationSound() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const ctx = getAudioContext()
+    // Nota dupla: Lá5 → Dó6 (som curto e agradável)
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
+    osc.type = 'sine'
     osc.connect(gain)
     gain.connect(ctx.destination)
     osc.frequency.setValueAtTime(880, ctx.currentTime)
-    osc.frequency.setValueAtTime(1047, ctx.currentTime + 0.1)
-    gain.gain.setValueAtTime(0.3, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3)
+    osc.frequency.setValueAtTime(1047, ctx.currentTime + 0.12)
+    gain.gain.setValueAtTime(0.4, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4)
     osc.start(ctx.currentTime)
-    osc.stop(ctx.currentTime + 0.3)
-  } catch {
-    // Audio API não disponível
+    osc.stop(ctx.currentTime + 0.4)
+  } catch (err) {
+    console.warn('Audio notification failed:', err)
   }
 }
 
@@ -70,7 +95,7 @@ export default function Messages() {
   const conversations = convData?.conversations || []
   const instances = instData?.instances || []
 
-  // Som + notificação quando chegar nova mensagem
+  // Som + notificação quando chegar nova mensagem (via unread count)
   useEffect(() => {
     if (prevUnreadRef.current === null) {
       prevUnreadRef.current = unreadCount
@@ -85,6 +110,20 @@ export default function Messages() {
     prevUnreadRef.current = unreadCount
   }, [unreadCount, soundEnabled])
 
+  // Som quando chegar nova mensagem na conversa aberta (last_message_at muda)
+  const lastMsgTimestamp = useRef(null)
+  useEffect(() => {
+    if (!conversations.length) return
+    const newest = conversations.reduce((max, c) => {
+      const t = new Date(c.last_message_at).getTime()
+      return t > max ? t : max
+    }, 0)
+    if (lastMsgTimestamp.current !== null && newest > lastMsgTimestamp.current) {
+      if (soundEnabled) playNotificationSound()
+    }
+    lastMsgTimestamp.current = newest
+  }, [conversations, soundEnabled])
+
   // Pedir permissão de notificação ao montar
   useEffect(() => {
     requestNotificationPermission()
@@ -94,6 +133,7 @@ export default function Messages() {
     const next = !soundEnabled
     setSoundEnabled(next)
     localStorage.setItem('forge_msg_sound', next ? 'on' : 'off')
+    if (next) playNotificationSound() // toca som de teste ao ativar
   }
 
   const filtered = search
