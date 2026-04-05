@@ -29,6 +29,7 @@ const adminSectionLinks = [
   { to: '/portal/admin/dashboard-mrr', label: 'Dashboard MRR', icon: ChartIcon },
   { to: '/portal/admin/leads', label: 'Leads', icon: UsersIcon },
   { to: '/portal/admin/whatsapp', label: 'WhatsApp', icon: ChatIcon },
+  { to: '/portal/admin/whatsapp-sessions', label: 'Sessões Agente', icon: ShieldIcon },
   { to: '/portal/admin/plan-templates', label: 'Tipos de Plano', icon: CubeIcon },
   { to: '/portal/admin/lgpd', label: 'LGPD', icon: ShieldIcon },
 ]
