@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useApi, apiFetch } from '../../../hooks/useApi.js'
+import { useUnreadMessages } from '../../../hooks/useUnreadMessages.js'
 
 const fmtTime = (iso) => {
   if (!iso) return ''
@@ -8,6 +9,47 @@ const fmtTime = (iso) => {
   const isToday = d.toDateString() === now.toDateString()
   if (isToday) return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+}
+
+// Som de notificação via Web Audio API (sem dependência de arquivo)
+function playNotificationSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.frequency.setValueAtTime(880, ctx.currentTime)
+    osc.frequency.setValueAtTime(1047, ctx.currentTime + 0.1)
+    gain.gain.setValueAtTime(0.3, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3)
+    osc.start(ctx.currentTime)
+    osc.stop(ctx.currentTime + 0.3)
+  } catch {
+    // Audio API não disponível
+  }
+}
+
+function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission()
+  }
+}
+
+function showBrowserNotification(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      new Notification(title, {
+        body,
+        icon: '/logo-192.png',
+        badge: '/logo-192.png',
+        tag: 'forge-whatsapp',
+        renotify: true,
+      })
+    } catch {
+      // Notifications não suportadas neste contexto
+    }
+  }
 }
 
 export default function Messages() {
@@ -19,10 +61,40 @@ export default function Messages() {
   const [newMessage, setNewMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [search, setSearch] = useState('')
+  const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('forge_msg_sound') !== 'off')
   const messagesEndRef = useRef(null)
+  const prevUnreadRef = useRef(null)
+
+  const { count: unreadCount } = useUnreadMessages({ enabled: true, interval: 10000 })
 
   const conversations = convData?.conversations || []
   const instances = instData?.instances || []
+
+  // Som + notificação quando chegar nova mensagem
+  useEffect(() => {
+    if (prevUnreadRef.current === null) {
+      prevUnreadRef.current = unreadCount
+      return
+    }
+    if (unreadCount > prevUnreadRef.current) {
+      if (soundEnabled) playNotificationSound()
+      if (document.hidden) {
+        showBrowserNotification('Nova mensagem WhatsApp', 'Você recebeu uma nova mensagem no Mission Control')
+      }
+    }
+    prevUnreadRef.current = unreadCount
+  }, [unreadCount, soundEnabled])
+
+  // Pedir permissão de notificação ao montar
+  useEffect(() => {
+    requestNotificationPermission()
+  }, [])
+
+  function toggleSound() {
+    const next = !soundEnabled
+    setSoundEnabled(next)
+    localStorage.setItem('forge_msg_sound', next ? 'on' : 'off')
+  }
 
   const filtered = search
     ? conversations.filter(c =>
@@ -33,7 +105,7 @@ export default function Messages() {
 
   const selectedConv = conversations.find(c => c.remote_jid === selectedJid)
 
-  async function loadMessages(jid) {
+  const loadMessages = useCallback(async (jid) => {
     setLoadingMsgs(true)
     try {
       const data = await apiFetch(`/api/whatsapp/messages/${encodeURIComponent(jid)}`)
@@ -41,7 +113,7 @@ export default function Messages() {
       refetchConversations()
     } catch { setMessages([]) }
     finally { setLoadingMsgs(false) }
-  }
+  }, [refetchConversations])
 
   function selectConversation(conv) {
     setSelectedJid(conv.remote_jid)
@@ -54,14 +126,14 @@ export default function Messages() {
     }
   }, [messages])
 
-  // Auto-refresh conversas a cada 30s
+  // Auto-refresh conversas a cada 15s (mais frequente pra detectar novas mensagens)
   useEffect(() => {
     const interval = setInterval(() => {
       refetchConversations()
       if (selectedJid) loadMessages(selectedJid)
-    }, 30000)
+    }, 15000)
     return () => clearInterval(interval)
-  }, [selectedJid])
+  }, [selectedJid, loadMessages, refetchConversations])
 
   async function handleSend(e) {
     e.preventDefault()
@@ -99,6 +171,23 @@ export default function Messages() {
             ))}
           </div>
         </div>
+        <button
+          onClick={toggleSound}
+          title={soundEnabled ? 'Desativar som de notificação' : 'Ativar som de notificação'}
+          className={`p-2 rounded-lg transition-colors ${
+            soundEnabled
+              ? 'text-copper hover:bg-copper/10'
+              : 'text-portal-muted hover:bg-portal-border/30'
+          }`}
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            {soundEnabled ? (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+            )}
+          </svg>
+        </button>
       </div>
 
       <div className="flex flex-1 bg-portal-surface border border-portal-border rounded-xl overflow-hidden min-h-0">

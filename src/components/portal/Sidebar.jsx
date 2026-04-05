@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../lib/auth.jsx'
+import { useUnreadMessages } from '../../hooks/useUnreadMessages.js'
 
 const clientLinks = [
   { to: '/portal', label: 'Dashboard', icon: HomeIcon, end: true },
@@ -36,6 +37,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
   const { user, logout, impersonating } = useAuth()
   const isAdmin = user?.role === 'admin' && !impersonating
   const mainLinks = isAdmin ? adminMainLinks : clientLinks
+  const { count: unreadCount } = useUnreadMessages({ enabled: isAdmin })
 
   return (
     <>
@@ -71,7 +73,13 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
         {/* Nav */}
         <nav className="flex-1 py-4 overflow-y-auto">
           {mainLinks.map((link) => (
-            <SidebarLink key={link.to} link={link} collapsed={collapsed} onClick={onMobileClose} />
+            <SidebarLink
+              key={link.to}
+              link={link}
+              collapsed={collapsed}
+              onClick={onMobileClose}
+              badge={link.to === '/portal/admin/messages' && unreadCount > 0 ? unreadCount : null}
+            />
           ))}
 
           {/* Seção Administração — só admin */}
@@ -120,7 +128,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
   )
 }
 
-function SidebarLink({ link, collapsed, onClick }) {
+function SidebarLink({ link, collapsed, onClick, badge }) {
   return (
     <NavLink
       to={link.to}
@@ -128,15 +136,31 @@ function SidebarLink({ link, collapsed, onClick }) {
       onClick={onClick}
       className={({ isActive }) => `
         flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-sm
-        transition-colors duration-200
+        transition-colors duration-200 relative
         ${isActive
           ? 'bg-copper/10 text-copper font-semibold'
           : 'text-portal-muted hover:text-portal-text hover:bg-portal-border/30'
         }
       `}
     >
-      <link.icon className="w-5 h-5 shrink-0" />
-      {!collapsed && <span className="truncate">{link.label}</span>}
+      <span className="relative shrink-0">
+        <link.icon className="w-5 h-5" />
+        {badge != null && collapsed && (
+          <span className="absolute -top-1.5 -right-1.5 bg-danger text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+            {badge > 9 ? '9+' : badge}
+          </span>
+        )}
+      </span>
+      {!collapsed && (
+        <>
+          <span className="truncate flex-1">{link.label}</span>
+          {badge != null && (
+            <span className="bg-danger text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+              {badge > 99 ? '99+' : badge}
+            </span>
+          )}
+        </>
+      )}
     </NavLink>
   )
 }

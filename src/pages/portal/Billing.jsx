@@ -13,8 +13,15 @@ const STATUS_COLORS = {
 
 const EXPENSE_CATEGORIES = [
   'Infraestrutura', 'Software', 'Marketing', 'Impostos', 'Servicos',
-  'Equipamentos', 'Escritorio', 'Viagem', 'Alimentacao', 'Outros',
+  'Equipamentos', 'Escritorio', 'Viagem', 'Alimentacao', 'Telecom', 'Outros',
 ]
+
+const EXPENSE_STATUS_LABELS = { paid: 'Pago', pending: 'Pendente' }
+const EXPENSE_STATUS_COLORS = {
+  paid: 'bg-success/15 text-success',
+  pending: 'bg-warning/15 text-warning',
+}
+const RECURRENCE_LABELS = { monthly: 'Mensal', annual: 'Anual' }
 
 const TABS = [
   { key: 'payments', label: 'Pagamentos' },
@@ -399,53 +406,87 @@ function ExpensesTab({ expenses, loading, refetch, onEdit }) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-portal-border">
-            <th className={thClass}>Descricao</th>
+            <th className={thClass}>Descrição</th>
             <th className={`${thClass} hidden md:table-cell`}>Categoria</th>
             <th className={`${thClass} hidden md:table-cell`}>Cliente</th>
             <th className={thClass}>Valor</th>
-            <th className={`${thClass} hidden md:table-cell`}>Data</th>
+            <th className={`${thClass} hidden md:table-cell`}>Vencimento</th>
+            <th className={`${thClass} hidden md:table-cell`}>Status</th>
             <th className={thClass}>Ação</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-portal-border">
           {expenses.length === 0 ? (
-            <EmptyRow colSpan={6} text="Nenhuma despesa registrada." />
+            <EmptyRow colSpan={7} text="Nenhuma despesa registrada." />
           ) : (
-            expenses.map((d) => (
-              <tr key={d.id} className="hover:bg-portal-border/10 transition-colors">
-                <td className="px-6 py-4">
-                  <p className="text-portal-text text-sm">{d.description}</p>
-                  {d.notes && <p className="text-portal-muted text-xs mt-0.5">{d.notes}</p>}
-                </td>
-                <td className="px-6 py-4 text-portal-text text-sm hidden md:table-cell">
-                  {d.category ? (
-                    <span className="bg-portal-border/30 text-portal-text text-xs px-2 py-0.5 rounded-full">{d.category}</span>
-                  ) : '—'}
-                </td>
-                <td className="px-6 py-4 text-portal-text text-sm hidden md:table-cell">{d.client_name || '—'}</td>
-                <td className="px-6 py-4 text-danger text-sm font-medium">{formatCurrency(d.amount)}</td>
-                <td className="px-6 py-4 text-portal-muted text-sm hidden md:table-cell">{formatDate(d.expense_date)}</td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-1">
-                    <ActionBtn title="Editar" color="text-copper" hoverColor="hover:text-copper-dark" onClick={() => onEdit(d)}>
-                      <EditIcon />
-                    </ActionBtn>
-                    <ActionBtn
-                      title="Apagar"
-                      color="text-portal-muted"
-                      hoverColor="hover:text-danger"
-                      onClick={async () => {
-                        if (!confirm('Apagar esta despesa?')) return
-                        await apiFetch(`/api/expenses/${d.id}`, { method: 'DELETE' })
-                        refetch()
-                      }}
-                    >
-                      <TrashIcon />
-                    </ActionBtn>
-                  </div>
-                </td>
-              </tr>
-            ))
+            expenses.map((d) => {
+              const st = EXPENSE_STATUS_COLORS[d.status] || EXPENSE_STATUS_COLORS.paid
+              return (
+                <tr key={d.id} className="hover:bg-portal-border/10 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <p className="text-portal-text text-sm">{d.description}</p>
+                      {d.is_recurring && (
+                        <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-copper/15 text-copper whitespace-nowrap">
+                          {RECURRENCE_LABELS[d.recurrence] || 'Recorrente'}
+                        </span>
+                      )}
+                    </div>
+                    {d.notes && <p className="text-portal-muted text-xs mt-0.5">{d.notes}</p>}
+                  </td>
+                  <td className="px-6 py-4 text-portal-text text-sm hidden md:table-cell">
+                    {d.category ? (
+                      <span className="bg-portal-border/30 text-portal-text text-xs px-2 py-0.5 rounded-full">{d.category}</span>
+                    ) : '—'}
+                  </td>
+                  <td className="px-6 py-4 text-portal-text text-sm hidden md:table-cell">{d.client_name || '—'}</td>
+                  <td className="px-6 py-4 text-danger text-sm font-medium">{formatCurrency(d.amount)}</td>
+                  <td className="px-6 py-4 text-portal-muted text-sm hidden md:table-cell">
+                    {d.due_day ? `Dia ${d.due_day}` : formatDate(d.expense_date)}
+                  </td>
+                  <td className="px-6 py-4 hidden md:table-cell">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${st}`}>
+                      {EXPENSE_STATUS_LABELS[d.status] || 'Pago'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-1">
+                      {d.status === 'pending' && (
+                        <ActionBtn
+                          title="Marcar como pago"
+                          color="text-success"
+                          hoverColor="hover:text-success/80"
+                          onClick={async () => {
+                            await apiFetch(`/api/expenses/${d.id}`, {
+                              method: 'PUT',
+                              body: JSON.stringify({ status: 'paid' }),
+                            })
+                            refetch()
+                          }}
+                        >
+                          <CheckIcon />
+                        </ActionBtn>
+                      )}
+                      <ActionBtn title="Editar" color="text-copper" hoverColor="hover:text-copper-dark" onClick={() => onEdit(d)}>
+                        <EditIcon />
+                      </ActionBtn>
+                      <ActionBtn
+                        title="Apagar"
+                        color="text-portal-muted"
+                        hoverColor="hover:text-danger"
+                        onClick={async () => {
+                          if (!confirm('Apagar esta despesa?')) return
+                          await apiFetch(`/api/expenses/${d.id}`, { method: 'DELETE' })
+                          refetch()
+                        }}
+                      >
+                        <TrashIcon />
+                      </ActionBtn>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })
           )}
         </tbody>
       </table>
@@ -717,6 +758,10 @@ function ExpenseModal({ expense, clients, onClose, onSaved }) {
     expense_date: expense?.expense_date?.split('T')[0] || new Date().toISOString().split('T')[0],
     category: expense?.category || '',
     notes: expense?.notes || '',
+    is_recurring: expense?.is_recurring || false,
+    recurrence: expense?.recurrence || 'monthly',
+    due_day: expense?.due_day || '',
+    status: expense?.status || 'paid',
   })
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -726,10 +771,16 @@ function ExpenseModal({ expense, clients, onClose, onSaved }) {
     setSaving(true)
     setError('')
     try {
+      const payload = {
+        ...form,
+        is_recurring: form.is_recurring,
+        recurrence: form.is_recurring ? form.recurrence : null,
+        due_day: form.due_day ? Number(form.due_day) : null,
+      }
       if (isEdit) {
-        await apiFetch(`/api/expenses/${expense.id}`, { method: 'PUT', body: JSON.stringify(form) })
+        await apiFetch(`/api/expenses/${expense.id}`, { method: 'PUT', body: JSON.stringify(payload) })
       } else {
-        await apiFetch('/api/expenses', { method: 'POST', body: JSON.stringify(form) })
+        await apiFetch('/api/expenses', { method: 'POST', body: JSON.stringify(payload) })
       }
       onSaved()
     } catch (err) {
@@ -743,7 +794,7 @@ function ExpenseModal({ expense, clients, onClose, onSaved }) {
     <ModalShell title={isEdit ? 'Editar Despesa' : 'Registrar Despesa'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-portal-text mb-1">Descricao</label>
+          <label className="block text-sm font-medium text-portal-text mb-1">Descrição</label>
           <input type="text" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required className={inputClass} placeholder="Ex: Hospedagem VPS Hostinger" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -776,6 +827,42 @@ function ExpenseModal({ expense, clients, onClose, onSaved }) {
             </select>
           </div>
         </div>
+
+        {/* Recorrência */}
+        <div className="border border-portal-border rounded-lg p-3 space-y-3">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.is_recurring}
+              onChange={(e) => setForm({ ...form, is_recurring: e.target.checked })}
+              className="w-4 h-4 rounded border-portal-border text-copper focus:ring-copper accent-copper"
+            />
+            <span className="text-sm font-medium text-portal-text">Despesa recorrente</span>
+          </label>
+          {form.is_recurring && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-portal-muted mb-1">Frequência</label>
+                <select value={form.recurrence} onChange={(e) => setForm({ ...form, recurrence: e.target.value })} className={`${inputClass} h-[38px]`}>
+                  <option value="monthly">Mensal</option>
+                  <option value="annual">Anual</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-portal-muted mb-1">Dia de vencimento</label>
+                <input type="number" min="1" max="31" value={form.due_day} onChange={(e) => setForm({ ...form, due_day: e.target.value })} className={inputClass} placeholder="Ex: 15" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-portal-muted mb-1">Status</label>
+                <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={`${inputClass} h-[38px]`}>
+                  <option value="paid">Pago</option>
+                  <option value="pending">Pendente</option>
+                </select>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-portal-text mb-1">Observações</label>
           <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className={`${inputClass} resize-none`} />
