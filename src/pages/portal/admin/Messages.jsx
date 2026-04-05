@@ -81,6 +81,7 @@ export default function Messages() {
   const { data: convData, loading, refetch: refetchConversations } = useApi('/api/whatsapp/conversations')
   const { data: instData } = useApi('/api/whatsapp/instances')
   const [selectedJid, setSelectedJid] = useState(null)
+  const [selectedInstance, setSelectedInstance] = useState(null)
   const [messages, setMessages] = useState([])
   const [loadingMsgs, setLoadingMsgs] = useState(false)
   const [newMessage, setNewMessage] = useState('')
@@ -143,12 +144,12 @@ export default function Messages() {
       )
     : conversations
 
-  const selectedConv = conversations.find(c => c.remote_jid === selectedJid)
+  const selectedConv = conversations.find(c => c.remote_jid === selectedJid && c.instance === selectedInstance)
 
-  const loadMessages = useCallback(async (jid) => {
+  const loadMessages = useCallback(async (jid, instance) => {
     setLoadingMsgs(true)
     try {
-      const data = await apiFetch(`/api/whatsapp/messages/${encodeURIComponent(jid)}`)
+      const data = await apiFetch(`/api/whatsapp/messages/${encodeURIComponent(jid)}?instance=${encodeURIComponent(instance)}`)
       setMessages(data.messages || [])
       refetchConversations()
     } catch { setMessages([]) }
@@ -157,7 +158,8 @@ export default function Messages() {
 
   function selectConversation(conv) {
     setSelectedJid(conv.remote_jid)
-    loadMessages(conv.remote_jid)
+    setSelectedInstance(conv.instance)
+    loadMessages(conv.remote_jid, conv.instance)
   }
 
   useEffect(() => {
@@ -170,10 +172,10 @@ export default function Messages() {
   useEffect(() => {
     const interval = setInterval(() => {
       refetchConversations()
-      if (selectedJid) loadMessages(selectedJid)
+      if (selectedJid && selectedInstance) loadMessages(selectedJid, selectedInstance)
     }, 15000)
     return () => clearInterval(interval)
-  }, [selectedJid, loadMessages, refetchConversations])
+  }, [selectedJid, selectedInstance, loadMessages, refetchConversations])
 
   async function handleSend(e) {
     e.preventDefault()
@@ -189,7 +191,7 @@ export default function Messages() {
         }),
       })
       setNewMessage('')
-      loadMessages(selectedJid)
+      loadMessages(selectedJid, selectedInstance)
     } catch (err) {
       alert('Erro ao enviar: ' + err.message)
     } finally {
@@ -252,10 +254,10 @@ export default function Messages() {
             ) : (
               filtered.map(conv => (
                 <button
-                  key={conv.remote_jid}
+                  key={`${conv.instance}:${conv.remote_jid}`}
                   onClick={() => selectConversation(conv)}
                   className={`w-full text-left px-4 py-3 border-b border-portal-border hover:bg-portal-border/10 transition-colors ${
-                    selectedJid === conv.remote_jid ? 'bg-copper/10 border-l-2 border-l-copper' : ''
+                    selectedJid === conv.remote_jid && selectedInstance === conv.instance ? 'bg-copper/10 border-l-2 border-l-copper' : ''
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
