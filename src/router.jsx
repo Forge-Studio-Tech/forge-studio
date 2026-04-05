@@ -19,6 +19,7 @@ import ClientMonitoring from './pages/portal/Monitoring.jsx'
 import AdminAnalytics from './pages/portal/admin/Analytics.jsx'
 import AdminLeads from './pages/portal/admin/Leads.jsx'
 import AdminMessages from './pages/portal/admin/Messages.jsx'
+import WhatsAppConfig from './pages/portal/admin/WhatsAppConfig.jsx'
 import ClientAnalytics from './pages/portal/Analytics.jsx'
 import Tickets from './pages/portal/Tickets.jsx'
 import TicketDetail from './pages/portal/TicketDetail.jsx'
@@ -87,6 +88,7 @@ export default function AppRouter() {
           <Route path="admin/analytics" element={<AdminAnalytics />} />
           <Route path="admin/leads" element={<AdminLeads />} />
           <Route path="admin/messages" element={<AdminMessages />} />
+          <Route path="admin/whatsapp" element={<WhatsAppConfig />} />
         </Route>
       </Routes>
     </AuthProvider>
