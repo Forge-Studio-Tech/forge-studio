@@ -437,6 +437,26 @@ export default function Messages() {
                     }
                   }}
                 />
+                <MediaUploadButton
+                  onSend={async (base64, type, caption, filename) => {
+                    try {
+                      await apiFetch('/api/whatsapp/send-media', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                          instance: selectedConv.instance,
+                          phone: selectedConv.remote_phone,
+                          media_base64: base64,
+                          media_type: type,
+                          caption,
+                          filename,
+                        }),
+                      })
+                      loadMessages(selectedJid, selectedInstance)
+                    } catch (err) {
+                      alert('Erro ao enviar: ' + err.message)
+                    }
+                  }}
+                />
                 <input
                   type="text"
                   value={newMessage}
@@ -675,6 +695,53 @@ function AudioRecorder({ onSend }) {
     >
       🎤
     </button>
+  )
+}
+
+// Botão de upload de mídia (imagem, vídeo, documento)
+function MediaUploadButton({ onSend }) {
+  const fileRef = useRef(null)
+  const [sending, setSending] = useState(false)
+
+  function detectType(file) {
+    if (file.type.startsWith('image/')) return 'image'
+    if (file.type.startsWith('video/')) return 'video'
+    return 'document'
+  }
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 20 * 1024 * 1024) { alert('Arquivo muito grande (max 20MB)'); return }
+
+    const type = detectType(file)
+    const caption = type !== 'document' ? prompt('Legenda (opcional):') || '' : ''
+
+    setSending(true)
+    try {
+      const base64 = await blobToBase64(file)
+      await onSend(base64, type, caption, file.name)
+    } catch (err) {
+      alert('Erro: ' + err.message)
+    } finally {
+      setSending(false)
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
+
+  return (
+    <>
+      <input ref={fileRef} type="file" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.zip" className="hidden" onChange={handleFile} />
+      <button
+        type="button"
+        onClick={() => fileRef.current?.click()}
+        disabled={sending}
+        title="Enviar imagem, vídeo ou documento"
+        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-portal-border/30 text-portal-muted hover:text-copper transition-colors disabled:opacity-50"
+      >
+        {sending ? '...' : '📎'}
+      </button>
+    </>
   )
 }
 
