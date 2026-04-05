@@ -14,6 +14,11 @@ const fmtPhone = (p) => {
   return p
 }
 
+const maskEmail = (e) => {
+  if (!e) return '—'
+  return e.replace(/(.{2}).+(@.+)/, '$1***$2')
+}
+
 function statusOf(s) {
   if (s.revoked) return { label: 'Revogada', color: 'bg-danger/15 text-danger' }
   if (!s.verified) return { label: 'Pendente', color: 'bg-warning/15 text-warning' }
@@ -28,6 +33,7 @@ export default function WhatsAppSessions() {
   const { data: logData, refetch: refetchLog } = useApi('/api/whatsapp/action-log?limit=30')
   const [filter, setFilter] = useState('all')
   const [acting, setActing] = useState(null)
+  const [revealedEmails, setRevealedEmails] = useState(new Set())
 
   const sessions = data?.sessions || []
   const logs = logData?.logs || []
@@ -109,6 +115,7 @@ export default function WhatsAppSessions() {
                 <tr className="border-b border-portal-border">
                   <th className="text-left px-4 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Telefone</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">Usuário</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden lg:table-cell">Email</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden md:table-cell">Tenant</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider">Status</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-portal-muted uppercase tracking-wider hidden lg:table-cell">Último uso</th>
@@ -122,6 +129,17 @@ export default function WhatsAppSessions() {
                     <tr key={s.phone} className="hover:bg-portal-border/10">
                       <td className="px-4 py-3 text-portal-text text-sm font-mono">{fmtPhone(s.phone)}</td>
                       <td className="px-4 py-3 text-portal-text text-sm hidden md:table-cell">{s.user_name || '—'}</td>
+                      <td className="px-4 py-3 text-portal-text text-xs hidden lg:table-cell">
+                        {s.user_email ? (
+                          <button
+                            onClick={() => setRevealedEmails(prev => { const n = new Set(prev); n.has(s.phone) ? n.delete(s.phone) : n.add(s.phone); return n })}
+                            className="font-mono hover:text-copper transition-colors"
+                            title={revealedEmails.has(s.phone) ? 'Clique pra mascarar' : 'Clique pra revelar'}
+                          >
+                            {revealedEmails.has(s.phone) ? s.user_email : maskEmail(s.user_email)}
+                          </button>
+                        ) : '—'}
+                      </td>
                       <td className="px-4 py-3 text-portal-text text-sm hidden md:table-cell">{s.tenant_name || '—'}</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${st.color}`}>{st.label}</span>
