@@ -82,6 +82,7 @@ export default function Messages() {
   const { data: instData } = useApi('/api/whatsapp/instances')
   const [selectedJid, setSelectedJid] = useState(null)
   const [selectedInstance, setSelectedInstance] = useState(null)
+  const [showContactPanel, setShowContactPanel] = useState(false)
   const [messages, setMessages] = useState([])
   const [loadingMsgs, setLoadingMsgs] = useState(false)
   const [newMessage, setNewMessage] = useState('')
@@ -260,10 +261,15 @@ export default function Messages() {
                     selectedJid === conv.remote_jid && selectedInstance === conv.instance ? 'bg-copper/10 border-l-2 border-l-copper' : ''
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-2">
+                    {conv.profile_pic_url ? (
+                      <img src={conv.profile_pic_url} alt="" className="w-8 h-8 rounded-full shrink-0 object-cover mt-0.5" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-portal-border/30 flex items-center justify-center text-sm shrink-0 mt-0.5">💬</div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="text-portal-text text-sm font-medium truncate">
-                        {conv.remote_name || conv.remote_phone}
+                        {conv.custom_name || conv.remote_name || conv.remote_phone}
                       </p>
                       <p className="text-portal-muted text-xs truncate">
                         {conv.remote_phone}
@@ -296,20 +302,31 @@ export default function Messages() {
           ) : (
             <>
               {/* Chat header */}
-              <div className="px-4 py-3 border-b border-portal-border flex items-center justify-between">
-                <div>
-                  <p className="text-portal-text font-semibold text-sm">
-                    {selectedConv?.remote_name || selectedConv?.remote_phone}
-                  </p>
-                  <p className="text-portal-muted text-xs">{selectedConv?.remote_phone} — {selectedConv?.instance}</p>
-                </div>
+              <div className="px-4 py-3 border-b border-portal-border flex items-center justify-between gap-3">
+                <button
+                  onClick={() => setShowContactPanel(true)}
+                  className="flex items-center gap-3 min-w-0 flex-1 hover:bg-portal-border/10 -mx-2 px-2 py-1 rounded transition-colors"
+                  title="Ver detalhes do contato"
+                >
+                  {selectedConv?.profile_pic_url ? (
+                    <img src={selectedConv.profile_pic_url} alt="" className="w-10 h-10 rounded-full shrink-0 object-cover" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-portal-border/30 flex items-center justify-center text-lg shrink-0">💬</div>
+                  )}
+                  <div className="text-left min-w-0 flex-1">
+                    <p className="text-portal-text font-semibold text-sm truncate">
+                      {selectedConv?.custom_name || selectedConv?.remote_name || selectedConv?.remote_phone}
+                    </p>
+                    <p className="text-portal-muted text-xs truncate">{selectedConv?.remote_phone} — {selectedConv?.instance}</p>
+                  </div>
+                </button>
                 <a
                   href={`https://wa.me/${selectedConv?.remote_phone}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-copper text-xs font-medium hover:text-copper-dark"
+                  className="text-copper text-xs font-medium hover:text-copper-dark shrink-0"
                 >
-                  Abrir no WhatsApp →
+                  WhatsApp →
                 </a>
               </div>
 
@@ -368,6 +385,139 @@ export default function Messages() {
               </form>
             </>
           )}
+        </div>
+      </div>
+
+      {showContactPanel && selectedConv && (
+        <ContactPanel
+          conv={selectedConv}
+          onClose={() => setShowContactPanel(false)}
+          onSaved={() => { refetchConversations(); setShowContactPanel(false) }}
+        />
+      )}
+    </div>
+  )
+}
+
+function ContactPanel({ conv, onClose, onSaved }) {
+  const [name, setName] = useState(conv.custom_name || conv.remote_name || '')
+  const [notes, setNotes] = useState(conv.notes || '')
+  const [saving, setSaving] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+  const [profilePic, setProfilePic] = useState(conv.profile_pic_url)
+
+  async function handleSave() {
+    setSaving(true)
+    try {
+      await apiFetch(`/api/whatsapp/conversations/${conv.instance}/${encodeURIComponent(conv.remote_jid)}`, {
+        method: 'PUT',
+        body: JSON.stringify({ custom_name: name.trim() || null, notes: notes.trim() || null }),
+      })
+      onSaved()
+    } catch (err) {
+      alert('Erro: ' + err.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function refreshProfile() {
+    setRefreshing(true)
+    try {
+      const res = await apiFetch(`/api/whatsapp/conversations/${conv.instance}/${encodeURIComponent(conv.remote_jid)}/refresh-profile`, { method: 'POST' })
+      setProfilePic(res.profile_pic_url)
+    } catch (err) {
+      alert('Erro: ' + err.message)
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-end" onClick={onClose}>
+      <div className="bg-portal-bg border-l border-portal-border w-full max-w-md h-full overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 bg-portal-bg border-b border-portal-border px-4 py-3 flex items-center justify-between">
+          <h2 className="text-portal-text font-semibold">Detalhes do contato</h2>
+          <button onClick={onClose} className="text-portal-muted hover:text-portal-text text-2xl leading-none">×</button>
+        </div>
+
+        <div className="p-4 space-y-4">
+          {/* Avatar + refresh */}
+          <div className="flex flex-col items-center gap-3 pb-4 border-b border-portal-border">
+            {profilePic ? (
+              <img src={profilePic} alt="" className="w-24 h-24 rounded-full object-cover" />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-portal-border/30 flex items-center justify-center text-4xl">💬</div>
+            )}
+            <button
+              onClick={refreshProfile}
+              disabled={refreshing}
+              className="text-copper text-xs font-medium hover:text-copper-dark disabled:opacity-50"
+            >
+              {refreshing ? 'Buscando...' : '🔄 Atualizar foto'}
+            </button>
+          </div>
+
+          {/* Info */}
+          <div className="space-y-2 pb-4 border-b border-portal-border">
+            <div>
+              <p className="text-portal-muted text-xs">Telefone</p>
+              <p className="text-portal-text text-sm font-mono">{conv.remote_phone}</p>
+            </div>
+            <div>
+              <p className="text-portal-muted text-xs">Nome no WhatsApp</p>
+              <p className="text-portal-text text-sm">{conv.remote_name || '—'}</p>
+            </div>
+            <div>
+              <p className="text-portal-muted text-xs">Instância</p>
+              <p className="text-portal-text text-sm">{conv.instance}</p>
+            </div>
+          </div>
+
+          {/* Custom name */}
+          <div>
+            <label className="block text-sm font-medium text-portal-text mb-1">Nome personalizado</label>
+            <input
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              maxLength={150}
+              placeholder="Ex: Paula - Cantina Dimensão"
+              className="w-full px-3 py-2 bg-portal-surface border border-portal-border rounded-lg text-portal-text text-sm focus:outline-none focus:border-copper"
+            />
+            <p className="text-portal-muted text-xs mt-1">Sobrescreve o nome que vem do WhatsApp</p>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-sm font-medium text-portal-text mb-1">Notas</label>
+            <textarea
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              maxLength={5000}
+              rows={8}
+              placeholder="Anotações sobre este contato ou conversa..."
+              className="w-full px-3 py-2 bg-portal-surface border border-portal-border rounded-lg text-portal-text text-sm focus:outline-none focus:border-copper resize-none"
+            />
+            <p className="text-portal-muted text-xs mt-1">{notes.length}/5000 caracteres</p>
+          </div>
+
+          {conv.notes_updated_at && (
+            <p className="text-portal-muted text-xs">
+              Notas atualizadas em {new Date(conv.notes_updated_at).toLocaleString('pt-BR')}
+            </p>
+          )}
+
+          <div className="flex gap-3 justify-end pt-4 border-t border-portal-border">
+            <button onClick={onClose} className="px-4 py-2 text-portal-muted text-sm hover:text-portal-text">Cancelar</button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="bg-copper hover:bg-copper-dark text-stone-950 font-bold px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+            >
+              {saving ? 'Salvando...' : 'Salvar'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
