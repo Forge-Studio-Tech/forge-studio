@@ -134,7 +134,7 @@ export default function ProjectDetail() {
         <section className="bg-portal-surface border border-portal-border rounded-xl p-6">
           <h2 className="text-lg font-semibold text-portal-text mb-4">Informações</h2>
           <dl className="space-y-3">
-            <Detail label="Tipo" value={project.type?.replace('_', ' ')} />
+            <Detail label="Tipo" value={project.type?.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())} />
             <Detail label="Status" value={STEP_LABELS[project.status] || project.status} />
             <Detail label="Criado em" value={new Date(project.created_at).toLocaleDateString('pt-BR')} />
           </dl>
