@@ -62,7 +62,7 @@ export default function ProjectDetail() {
           <h1 className="text-2xl font-bold text-portal-text">{project.name}</h1>
           {project.client_name && <p className="text-portal-muted text-sm mt-1">{project.client_name}</p>}
         </div>
-        <span className="text-portal-muted text-sm capitalize">{project.type?.replace('_', ' ')}</span>
+        <span className="text-portal-muted text-sm">{project.type?.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
       </div>
 
       {/* Timeline de status */}
@@ -71,8 +71,9 @@ export default function ProjectDetail() {
         <div className="bg-portal-surface border border-portal-border rounded-xl p-6">
           <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
             {STEPS.map((step, i) => {
-              const isActive = i === currentStepIndex
-              const isDone = i < currentStepIndex
+              const isLast = i === STEPS.length - 1
+              const isActive = i === currentStepIndex && !isLast
+              const isDone = i < currentStepIndex || (i === currentStepIndex && isLast)
               return (
                 <div key={step} className="flex items-center gap-1 sm:gap-2">
                   {isAdmin ? (
